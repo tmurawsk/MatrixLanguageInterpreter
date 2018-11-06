@@ -53,6 +53,6 @@ public class InputReader {
     }
 
     public boolean isEof() throws IOException {
-        return isCharPeeked || stream.available() > 0;
+        return !isCharPeeked && stream.available() <= 0;
     }
 }

@@ -1,5 +1,6 @@
 package tkom;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -21,7 +22,7 @@ public class InputReader {
 
     public char read() throws IOException {
         if(isEof())
-            throw new IOException();
+            throw new EOFException();
 
         char nextChar;
         if(isCharPeeked) {
@@ -42,7 +43,7 @@ public class InputReader {
 
     public char peek() throws IOException {
         if(isEof())
-            throw new IOException();
+            throw new EOFException();
 
         if(!isCharPeeked) {
             peekedChar = (char) stream.read();

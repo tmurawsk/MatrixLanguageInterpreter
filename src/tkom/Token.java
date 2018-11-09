@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Token {
+    public static int MAX_NAME_LENGTH = 100;
+
     private TokenID id;
     private String value;
     private Position position;
@@ -13,7 +15,11 @@ public class Token {
     private static Map<String, TokenID> keywordMap = initializeKeywordMap();
 
     public Token() {
-        this(TokenID.Invalid, new Position(), "");
+        this(TokenID.Invalid, new Position());
+    }
+
+    public Token(TokenID id, Position position) {
+        this(id, position, getKeywordByToken(id));
     }
 
     public Token(TokenID id, Position position, String value) {
@@ -45,7 +51,7 @@ public class Token {
     }
 
     private static Map<TokenID, String> initializeNameMap() {
-        Map<TokenID, String> m = new HashMap<TokenID, String>();
+        Map<TokenID, String> m = new HashMap<>();
 
         m.put(TokenID.Main,     "Main");
         m.put(TokenID.Func,     "Func");
@@ -95,7 +101,7 @@ public class Token {
     }
 
     private static Map<String, TokenID> initializeKeywordMap() {
-        Map<String, TokenID> m = new HashMap<String, TokenID>();
+        Map<String, TokenID> m = new HashMap<>();
 
         m.put("main",   TokenID.Main);
         m.put("func",   TokenID.Func);

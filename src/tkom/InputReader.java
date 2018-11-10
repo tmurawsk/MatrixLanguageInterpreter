@@ -34,7 +34,7 @@ public class InputReader {
 
         position.charNum++;
         if(nextChar == '\n') {
-            position.charNum = 1;
+            position.charNum = 0;
             position.lineNum++;
         }
 

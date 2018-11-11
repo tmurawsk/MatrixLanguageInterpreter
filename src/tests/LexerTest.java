@@ -49,7 +49,7 @@ class LexerTest {
 
     @Test
     void readTokensWithWhitespaces() {
-        initializeLexer("    \t\nabd3  \t main\n \t 123;   ");
+        initializeLexer("    \t\nabd3  \t main\n \t 123;,   ");
 
         token = lexer.nextToken();
         assertEquals(TokenID.Name, token.getId());
@@ -74,5 +74,11 @@ class LexerTest {
         assertEquals(3, token.getPosition().lineNum);
         assertEquals(7, token.getPosition().charNum);
         assertEquals(Token.getKeywordByToken(TokenID.Semicolon), token.getValue());
+
+        token = lexer.nextToken();
+        assertEquals(TokenID.Comma, token.getId());
+        assertEquals(3, token.getPosition().lineNum);
+        assertEquals(8, token.getPosition().charNum);
+        assertEquals(Token.getKeywordByToken(TokenID.Comma), token.getValue());
     }
 }

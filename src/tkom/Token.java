@@ -22,6 +22,10 @@ public class Token {
         this(id, position, getKeywordByToken(id));
     }
 
+    public Token(TokenID id, Position position, char c) {
+        this(id, position, String.valueOf(c));
+    }
+
     public Token(TokenID id, Position position, String value) {
         this.id = id;
         this.position = position;

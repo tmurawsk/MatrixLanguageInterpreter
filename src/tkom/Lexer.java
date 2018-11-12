@@ -6,16 +6,16 @@ import java.io.InputStream;
 
 public class Lexer {
     private InputReader reader;
-    private StringBuilder token;
+    private StringBuilder tokenValue;
 
     public Lexer(InputStream stream) {
         reader = new InputReader(stream);
-        token = new StringBuilder();
+        tokenValue = new StringBuilder();
     }
 
     public Token nextToken() {
         char c;
-        token = new StringBuilder();
+        tokenValue = new StringBuilder();
         Position positionBefore = new Position(reader.getPosition());
 
         try {
@@ -31,6 +31,10 @@ public class Lexer {
             if (Character.isDigit(c))
                 return numberTokenHandler(c, positionBefore);
 
+            if(c == '"') {
+                return stringTokenHandler(positionBefore);
+            }
+
             return otherTokenHandler(c, positionBefore);
         } catch (EOFException e) {
             return new Token(TokenID.Eof, positionBefore);
@@ -40,30 +44,30 @@ public class Lexer {
     }
 
     private Token nameTokenHandler(char c, Position positionBefore) throws IOException {
-        token.append(c);
+        tokenValue.append(c);
 
         try {
             while (Character.isLetterOrDigit(reader.peek()) || reader.peek() == '_') {
-                token.append(reader.read());
+                tokenValue.append(reader.read());
 
-                if (token.length() >= Token.MAX_NAME_LENGTH) {
+                if (tokenValue.length() >= Token.MAX_NAME_LENGTH) {
                     lexError("ERROR: NAME TOO LONG!");
 
                     while (Character.isLetterOrDigit(reader.peek()) || reader.peek() == '_')
                         reader.read();
 
-                    return new Token(TokenID.Invalid, positionBefore, token.toString());
+                    return new Token(TokenID.Invalid, positionBefore, tokenValue.toString());
                 }
             }
         } catch (EOFException ignored) {
         }
 
-        TokenID tokenID = Token.getTokenByKeyword(token.toString());
+        TokenID tokenID = Token.getTokenByKeyword(tokenValue.toString());
 
         if (tokenID != TokenID.Invalid)
-            return new Token(tokenID, positionBefore);
+            return new Token(tokenID, positionBefore, tokenValue.toString());
         else
-            return new Token(TokenID.Name, positionBefore, token.toString());
+            return new Token(TokenID.Name, positionBefore, tokenValue.toString());
     }
 
     private Token numberTokenHandler(char c, Position positionBefore) throws IOException {
@@ -103,67 +107,74 @@ public class Lexer {
 
         switch (c) {
             case ';':
-                return new Token(TokenID.Semicolon, position);
+                return new Token(TokenID.Semicolon, position, c);
             case ',':
-                return new Token(TokenID.Comma, position);
+                return new Token(TokenID.Comma, position, c);
             case '(':
-                return new Token(TokenID.RoundBracketOpen, position);
+                return new Token(TokenID.RoundBracketOpen, position, c);
             case ')':
-                return new Token(TokenID.RoundBracketClose, position);
+                return new Token(TokenID.RoundBracketClose, position, c);
             case '{':
-                return new Token(TokenID.CurlyBracketOpen, position);
+                return new Token(TokenID.CurlyBracketOpen, position, c);
             case '}':
-                return new Token(TokenID.CurlyBracketClose, position);
+                return new Token(TokenID.CurlyBracketClose, position, c);
             case '[':
-                return new Token(TokenID.SquareBracketOpen, position);
+                return new Token(TokenID.SquareBracketOpen, position, c);
             case ']':
-                return new Token(TokenID.SquareBracketClose, position);
+                return new Token(TokenID.SquareBracketClose, position, c);
             case '+':
-                return new Token(TokenID.Plus, position);
+                return new Token(TokenID.Plus, position, c);
             case '-':
-                return new Token(TokenID.Minus, position);
+                return new Token(TokenID.Minus, position, c);
             case '*':
-                return new Token(TokenID.Multiply, position);
+                return new Token(TokenID.Multiply, position, c);
             case '/':
-                return new Token(TokenID.Divide, position);
+                return new Token(TokenID.Divide, position, c);
             case '=':
-                return ifNextIsEqual('=', TokenID.Equal, TokenID.Assign, position);
+                return ifNextIsEqual('=', TokenID.Equal, TokenID.Assign, position, c);
             case '!':
-                return ifNextIsEqual('=', TokenID.Unequal, TokenID.Negation, position);
+                return ifNextIsEqual('=', TokenID.Unequal, TokenID.Negation, position, c);
             case '<':
-                return ifNextIsEqual('=', TokenID.LessOrEqual, TokenID.Less, position);
+                return ifNextIsEqual('=', TokenID.LessOrEqual, TokenID.Less, position, c);
             case '>':
-                return ifNextIsEqual('=', TokenID.GreaterOrEqual, TokenID.Greater, position);
+                return ifNextIsEqual('=', TokenID.GreaterOrEqual, TokenID.Greater, position, c);
             case '&':
-                return ifNextIsEqual('&', TokenID.And, TokenID.Invalid, position);
+                return ifNextIsEqual('&', TokenID.And, TokenID.Invalid, position, c);
             case '|':
-                return ifNextIsEqual('|', TokenID.Or, TokenID.Invalid, position);
-            case '"':
-                try {
-                    do {
-                        c = reader.read();
-                    } while (c != '"');
-                } catch (EOFException e) {
-                    lexError("ERROR: NO STRING CLOSING MARK FOUND");
-                    return new Token(TokenID.Invalid, position);
-                }
-                return new Token(TokenID.String, position);
+                return ifNextIsEqual('|', TokenID.Or, TokenID.Invalid, position, c);
             default:
                 lexError("ERROR: INVALID TOKEN");
                 return new Token(TokenID.Invalid, position);
         }
     }
 
-    private Token ifNextIsEqual(char expectedChar, TokenID tokenIfTrue, TokenID tokenIfFalse, Position position) throws IOException {
+    private Token stringTokenHandler(Position positionBefore) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        char c;
+
+        try {
+            c = reader.read();
+            while (c != '"') {
+                sb.append(c);
+                c = reader.read();
+            }
+        } catch (EOFException e) {
+            lexError("ERROR: NO STRING CLOSING MARK FOUND");
+            return new Token(TokenID.Invalid, positionBefore);
+        }
+        return new Token(TokenID.String, positionBefore, sb.toString());
+    }
+
+    private Token ifNextIsEqual(char expectedChar, TokenID tokenIfTrue, TokenID tokenIfFalse, Position position, char givenChar) throws IOException {
         char c = reader.peek();
 
         if (c == expectedChar) {
             reader.read();
-            return new Token(tokenIfTrue, position);
+            return new Token(tokenIfTrue, position, String.valueOf(givenChar) + expectedChar);
         } else {
             if (tokenIfFalse == TokenID.Invalid)
                 lexError("ERROR: INVALID TOKEN");
-            return new Token(tokenIfFalse, position);
+            return new Token(tokenIfFalse, position, givenChar);
         }
     }
 

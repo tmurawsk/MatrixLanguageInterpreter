@@ -51,7 +51,7 @@ class LexerTest {
         assertEquals(TokenID.Func, token.getId());
         assertEquals(1, token.getPosition().lineNum);
         assertEquals(1, token.getPosition().charNum);
-        assertEquals(Token.getKeywordByToken(TokenID.Func), token.getValue());
+        assertEquals("func", token.getValue());
     }
 
     @Test
@@ -79,7 +79,7 @@ class LexerTest {
         assertEquals(TokenID.Main, token.getId());
         assertEquals(2, token.getPosition().lineNum);
         assertEquals(9, token.getPosition().charNum);
-        assertEquals(Token.getKeywordByToken(TokenID.Main), token.getValue());
+        assertEquals("main", token.getValue());
 
         token = lexer.nextToken();
         assertEquals(TokenID.Number, token.getId());
@@ -91,13 +91,13 @@ class LexerTest {
         assertEquals(TokenID.Semicolon, token.getId());
         assertEquals(3, token.getPosition().lineNum);
         assertEquals(7, token.getPosition().charNum);
-        assertEquals(Token.getKeywordByToken(TokenID.Semicolon), token.getValue());
+        assertEquals(";", token.getValue());
 
         token = lexer.nextToken();
         assertEquals(TokenID.Comma, token.getId());
         assertEquals(3, token.getPosition().lineNum);
         assertEquals(8, token.getPosition().charNum);
-        assertEquals(Token.getKeywordByToken(TokenID.Comma), token.getValue());
+        assertEquals(",", token.getValue());
     }
 
     @Test

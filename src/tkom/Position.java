@@ -5,7 +5,7 @@ public class Position {
     public int charNum;
 
     public Position() {
-        this(1, 0);
+        this(1, 1);
     }
 
     public Position(int lineNum, int charNum) {

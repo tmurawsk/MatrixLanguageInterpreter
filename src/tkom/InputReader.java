@@ -21,11 +21,11 @@ public class InputReader {
     }
 
     public char read() throws IOException {
-        if(isEof())
+        if (isEof())
             throw new EOFException();
 
         char nextChar;
-        if(isCharPeeked) {
+        if (isCharPeeked) {
             nextChar = peekedChar;
             isCharPeeked = false;
         } else {
@@ -33,8 +33,8 @@ public class InputReader {
         }
 
         position.charNum++;
-        if(nextChar == '\n') {
-            position.charNum = 0;
+        if (nextChar == '\n') {
+            position.charNum = 1;
             position.lineNum++;
         }
 
@@ -42,10 +42,10 @@ public class InputReader {
     }
 
     public char peek() throws IOException {
-        if(isEof())
+        if (isEof())
             throw new EOFException();
 
-        if(!isCharPeeked) {
+        if (!isCharPeeked) {
             peekedChar = (char) stream.read();
             isCharPeeked = true;
         }

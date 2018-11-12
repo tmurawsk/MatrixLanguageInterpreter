@@ -19,11 +19,11 @@ public class Lexer {
         Position positionBefore = new Position(reader.getPosition());
 
         try {
-            do {
-                c = reader.read();
-            } while (Character.isWhitespace(c));
-
+            while (Character.isWhitespace(reader.peek())) {
+                reader.read();
+            }
             positionBefore = new Position(reader.getPosition());
+            c = reader.read();
 
             if (Character.isLetter(c))
                 return nameTokenHandler(c, positionBefore);
@@ -74,25 +74,26 @@ public class Lexer {
                 number = number * 10 + (reader.read() - '0');
 
                 if (number < 0) {
-                    lexError("ERROR: NUMBER OUT OF LIMITS");
+                    lexError("ERROR: NUMBER OUT OF LIMITS!");
 
-                    while (Character.isDigit(reader.peek())) {
+                    while (Character.isLetterOrDigit(reader.peek())) {
                         reader.read();
                     }
 
                     return new Token(TokenID.Invalid, positionBefore);
                 }
             }
+
+            if (Character.isLetter(reader.peek())) {
+                lexError("ERROR: INVALID TOKEN!");
+
+                do {
+                    reader.read();
+                } while (Character.isLetterOrDigit(reader.peek()));
+
+                return new Token(TokenID.Invalid, positionBefore);
+            }
         } catch (EOFException e) {
-        }
-
-        if (Character.isLetter(c)) {
-            lexError("ERROR: INVALID TOKEN");
-
-            while (Character.isLetterOrDigit(reader.peek()))
-                reader.read();
-
-            return new Token(TokenID.Invalid, positionBefore);
         }
 
         return new Token(TokenID.Number, positionBefore, String.valueOf(number));
@@ -166,7 +167,7 @@ public class Lexer {
         }
     }
 
-    private void lexError(String msg) {
-        System.err.println("In line: " + reader.getPosition().lineNum + ":\n\t" + msg);
+    private void lexError(String msg) { // TODO: move this to Parser
+        System.err.println("In line: " + reader.getPosition().lineNum + ", col: " + reader.getPosition().charNum + ":\n\t" + msg);
     }
 }

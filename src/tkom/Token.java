@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Token {
-    public static int MAX_NAME_LENGTH = 100;
+    static int MAX_NAME_LENGTH = 100;
 
     private TokenID id;
     private String value;
@@ -14,15 +14,11 @@ public class Token {
 
     private static Map<String, TokenID> keywordMap = initializeKeywordMap();
 
-    public Token() {
-        this(TokenID.Invalid, new Position());
+    Token(TokenID id, Position position) {
+        this(id, position, getNameByToken(id));
     }
 
-    public Token(TokenID id, Position position) {
-        this(id, position, getKeywordByToken(id));
-    }
-
-    public Token(TokenID id, Position position, char c) {
+    Token(TokenID id, Position position, char c) {
         this(id, position, String.valueOf(c));
     }
 
@@ -44,12 +40,12 @@ public class Token {
         return position;
     }
 
-    public static String getKeywordByToken(TokenID tokenID) {
+    static String getNameByToken(TokenID tokenID) {
         String toReturn = nameMap.get(tokenID);
         return toReturn != null ? toReturn : nameMap.get(TokenID.Invalid);
     }
 
-    public static TokenID getTokenByKeyword(String keyword) {
+    static TokenID getTokenByKeyword(String keyword) {
         TokenID toReturn = keywordMap.get(keyword);
         return toReturn != null ? toReturn : TokenID.Invalid;
     }

@@ -24,6 +24,7 @@ public class Lexer {
             }
             positionBefore = new Position(reader.getPosition());
             c = reader.read();
+            tokenValue.append(c);
 
             if (Character.isLetter(c))
                 return nameTokenHandler(c, positionBefore);
@@ -44,19 +45,16 @@ public class Lexer {
     }
 
     private Token nameTokenHandler(char c, Position positionBefore) throws IOException {
-        tokenValue.append(c);
 
         try {
             while (Character.isLetterOrDigit(reader.peek()) || reader.peek() == '_') {
                 tokenValue.append(reader.read());
 
                 if (tokenValue.length() >= Token.MAX_NAME_LENGTH) {
-                    lexError("ERROR: NAME TOO LONG!");
-
                     while (Character.isLetterOrDigit(reader.peek()) || reader.peek() == '_')
                         reader.read();
 
-                    return new Token(TokenID.Invalid, positionBefore, tokenValue.toString());
+                    return new Token(TokenID.Invalid, positionBefore, "ERROR: NAME TOO LONG!");
                 }
             }
         } catch (EOFException ignored) {
@@ -75,29 +73,26 @@ public class Lexer {
 
         try {
             while (Character.isDigit(reader.peek())) {
-                number = number * 10 + (reader.read() - '0');
+                c = reader.read();
+                tokenValue.append(c);
+                number = number * 10 + (c - '0');
 
                 if (number < 0) {
-                    lexError("ERROR: NUMBER OUT OF LIMITS!");
-
                     while (Character.isLetterOrDigit(reader.peek())) {
                         reader.read();
                     }
-
-                    return new Token(TokenID.Invalid, positionBefore);
+                    return new Token(TokenID.Invalid, positionBefore, "ERROR: NUMBER OUT OF LIMITS!");
                 }
             }
 
             if (Character.isLetter(reader.peek())) {
-                lexError("ERROR: INVALID TOKEN!");
-
                 do {
-                    reader.read();
+                    tokenValue.append(reader.read());
                 } while (Character.isLetterOrDigit(reader.peek()));
 
-                return new Token(TokenID.Invalid, positionBefore);
+                return new Token(TokenID.Invalid, positionBefore, tokenValue.toString());
             }
-        } catch (EOFException e) {
+        } catch (EOFException ignored) {
         }
 
         return new Token(TokenID.Number, positionBefore, String.valueOf(number));
@@ -143,26 +138,24 @@ public class Lexer {
             case '|':
                 return ifNextIsEqual('|', TokenID.Or, TokenID.Invalid, position, c);
             default:
-                lexError("ERROR: INVALID TOKEN");
-                return new Token(TokenID.Invalid, position);
+                return new Token(TokenID.Invalid, position, c);
         }
     }
 
     private Token stringTokenHandler(Position positionBefore) throws IOException {
-        StringBuilder sb = new StringBuilder();
+        tokenValue = new StringBuilder();
         char c;
 
         try {
             c = reader.read();
             while (c != '"') {
-                sb.append(c);
+                tokenValue.append(c);
                 c = reader.read();
             }
         } catch (EOFException e) {
-            lexError("ERROR: NO STRING CLOSING MARK FOUND");
-            return new Token(TokenID.Invalid, positionBefore);
+            return new Token(TokenID.Invalid, positionBefore, "ERROR: NO STRING CLOSING MARK FOUND!");
         }
-        return new Token(TokenID.String, positionBefore, sb.toString());
+        return new Token(TokenID.String, positionBefore, tokenValue.toString());
     }
 
     private Token ifNextIsEqual(char expectedChar, TokenID tokenIfTrue, TokenID tokenIfFalse, Position position, char givenChar) throws IOException {
@@ -170,15 +163,10 @@ public class Lexer {
 
         if (c == expectedChar) {
             reader.read();
-            return new Token(tokenIfTrue, position, String.valueOf(givenChar) + expectedChar);
+            return new Token(tokenIfTrue, position, tokenValue.append(c).toString());
         } else {
-            if (tokenIfFalse == TokenID.Invalid)
-                lexError("ERROR: INVALID TOKEN");
-            return new Token(tokenIfFalse, position, givenChar);
+            return new Token(tokenIfFalse, position, tokenValue.toString());
         }
     }
 
-    private void lexError(String msg) { // TODO: move this to Parser
-        System.err.println("In line: " + reader.getPosition().lineNum + ", col: " + reader.getPosition().charNum + ":\n\t" + msg);
-    }
 }

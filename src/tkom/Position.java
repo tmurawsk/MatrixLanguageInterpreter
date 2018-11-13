@@ -4,7 +4,7 @@ public class Position {
     public int lineNum;
     public int charNum;
 
-    public Position() {
+    Position() {
         this(1, 1);
     }
 
@@ -13,7 +13,7 @@ public class Position {
         this.charNum = charNum;
     }
 
-    public Position(Position position) {
+    Position(Position position) {
         this(position.lineNum, position.charNum);
     }
 

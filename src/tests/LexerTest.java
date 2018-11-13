@@ -1,15 +1,11 @@
 package tests;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tkom.Lexer;
 import tkom.Token;
 import tkom.TokenID;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,22 +13,9 @@ class LexerTest {
     private Lexer lexer;
     private Token token;
 
-    private final PrintStream originalErr = System.err;
-    private final ByteArrayOutputStream myErr = new ByteArrayOutputStream();
-
 
     void initializeLexer(String s) {
         lexer = new Lexer(new ByteArrayInputStream(s.getBytes()));
-    }
-
-    @BeforeEach
-    void setUpErrOutput() {
-        System.setErr(new PrintStream(myErr));
-    }
-
-    @AfterEach
-    void restoreErrOutput() {
-        System.setErr(originalErr);
     }
 
     @Test

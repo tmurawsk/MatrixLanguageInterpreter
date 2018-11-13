@@ -14,7 +14,7 @@ public class Main {
 
             do {
                 token = lexer.nextToken();
-                System.out.println(Token.getKeywordByToken(token.getId()) + ":\t" + token.getValue());
+                System.out.println(Token.getNameByToken(token.getId()) + ":\t" + token.getValue());
             } while (token.getId() != TokenID.Eof);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

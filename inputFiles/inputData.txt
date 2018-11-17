@@ -1,13 +1,13 @@
-func foo (num a) mat3 {
+func foo (num a) mat {
     if (a < 0) {
         a = -a;
     }
     num i = 0;
     num j = 0;
-    mat3 result;
+    mat result = [3][4];
 
     while (i < 3) {
-        while (j < 3) {
+        while (j < 4) {
             result[i][j] = a;
             a = a + 1;
         }
@@ -20,7 +20,7 @@ func foo (num a) mat3 {
 
 func main () num {
     num n = 5;
-    mat3 matrix = foo(n);
+    mat matrix = foo(n);
     wdokwodwkfjoEFJEJFOIWJEjeOVEOIVNEJVeojfaiovjoIEVANVNnvainvvainvvnnvjfnvjasdfghjkjhgfdsasdfghjkasdfghjkasdfghjasdfgh
 
     print ("My num: " + n);

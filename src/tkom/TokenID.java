@@ -1,7 +1,7 @@
 package tkom;
 
 public enum TokenID {
-    Main, Func, If, Else, While, Print, Return, Num, Mat2, Mat3,
+    Main, Func, If, Else, While, Print, Read, Return, Num, Mat,
     Semicolon, Comma, RoundBracketOpen, RoundBracketClose, CurlyBracketOpen, CurlyBracketClose, SquareBracketOpen, SquareBracketClose,
     Plus, Minus, Multiply, Divide, Assign,
     Negation, Or, And,

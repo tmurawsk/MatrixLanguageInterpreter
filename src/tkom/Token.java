@@ -59,10 +59,10 @@ public class Token {
         m.put(TokenID.Else,     "Else");
         m.put(TokenID.While,    "While");
         m.put(TokenID.Print,    "Print");
+        m.put(TokenID.Read,     "Read");
         m.put(TokenID.Return,   "Return");
         m.put(TokenID.Num,      "Num");
-        m.put(TokenID.Mat2,     "Mat2");
-        m.put(TokenID.Mat3,     "Mat3");
+        m.put(TokenID.Mat,      "Mat");
 
         m.put(TokenID.Semicolon,            "Semicolon");
         m.put(TokenID.Comma,                "Comma");
@@ -109,10 +109,10 @@ public class Token {
         m.put("else",   TokenID.Else);
         m.put("while",  TokenID.While);
         m.put("print",  TokenID.Print);
+        m.put("read",   TokenID.Read);
         m.put("return", TokenID.Return);
         m.put("num",    TokenID.Num);
-        m.put("mat2",   TokenID.Mat2);
-        m.put("mat3",   TokenID.Mat3);
+        m.put("mat",    TokenID.Mat);
 
         return m;
     }

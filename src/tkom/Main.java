@@ -13,7 +13,7 @@ public class Main {
             Token token;
 
             do {
-                token = lexer.nextToken();
+                token = lexer.readToken();
                 System.out.println(Token.getNameByToken(token.getId()) + ":\t" + token.getValue());
             } while (token.getId() != TokenID.Eof);
         } catch (FileNotFoundException e) {

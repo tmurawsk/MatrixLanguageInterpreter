@@ -40,12 +40,12 @@ public class Token {
         return position;
     }
 
-    static String getNameByToken(TokenID tokenID) {
+    public static String getNameByToken(TokenID tokenID) {
         String toReturn = nameMap.get(tokenID);
         return toReturn != null ? toReturn : nameMap.get(TokenID.Invalid);
     }
 
-    static TokenID getTokenByKeyword(String keyword) {
+    public static TokenID getTokenByKeyword(String keyword) {
         TokenID toReturn = keywordMap.get(keyword);
         return toReturn != null ? toReturn : TokenID.Invalid;
     }

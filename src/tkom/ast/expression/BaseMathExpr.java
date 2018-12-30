@@ -1,23 +1,34 @@
 package tkom.ast.expression;
 
 import tkom.ast.Variable;
+import tkom.ast.statement.Statement;
 
-public class BaseMathExpr {
-    boolean isMinus;
-    MathExpr mathExpr;
-    Variable variable;
-    //TODO function call
+public class BaseMathExpr extends MathExpression {
+    private boolean isMinus;
+    private MathExpression expression;
+    private Variable variable;
 
-    public BaseMathExpr() {
+    private BaseMathExpr(Statement parent) {
+        super(parent);
         isMinus = false;
     }
 
-    public BaseMathExpr(MathExpr expr) {
-        this();
-        this.mathExpr = expr;
+    public BaseMathExpr(Statement parent, MathExpression expression) {
+        this(parent);
+        this.expression = expression;
     }
 
-    public BaseMathExpr(Variable variable) {
+    public BaseMathExpr(Statement parent, Variable variable) {
+        this(parent);
         this.variable = variable;
+    }
+
+    public void setMinus() {
+        isMinus = true;
+    }
+
+    @Override
+    public Variable evaluate() {
+        return null; //TODO
     }
 }

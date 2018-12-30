@@ -5,10 +5,11 @@ import tkom.ast.expression.MathExpr;
 
 import java.util.LinkedList;
 
-public class PrintStatement implements Statement {
+public class PrintStatement extends Statement {
     private LinkedList<Printable> toPrint;
 
-    public PrintStatement() {
+    public PrintStatement(Statement parent) {
+        super(parent);
         toPrint = new LinkedList<>();
     }
 

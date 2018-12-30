@@ -3,17 +3,32 @@ package tkom;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
 
 public class Lexer {
     private InputReader reader;
     private StringBuilder tokenValue;
+    private LinkedList<Token> tokens;
 
     public Lexer(InputStream stream) {
         reader = new InputReader(stream);
         tokenValue = new StringBuilder();
+        tokens = new LinkedList<>();
     }
 
-    public Token nextToken() {
+    public Token peekToken() {
+        Token token = getNextToken();
+        tokens.add(token);
+        return token;
+    }
+
+    public Token readToken() {
+        if(!tokens.isEmpty())
+            return tokens.removeFirst();
+        return getNextToken();
+    }
+
+    private Token getNextToken() {
         char c;
         tokenValue = new StringBuilder();
         Position positionBefore = new Position(reader.getPosition());

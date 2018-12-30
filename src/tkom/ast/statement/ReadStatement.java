@@ -2,10 +2,11 @@ package tkom.ast.statement;
 
 import tkom.ast.Variable;
 
-public class ReadStatement implements Statement {
+public class ReadStatement extends Statement {
     private Variable variable;
 
-    public ReadStatement(Variable variable) {
+    public ReadStatement(Statement parent, Variable variable) {
+        super(parent);
         this.variable = variable;
     }
 

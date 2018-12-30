@@ -3,7 +3,7 @@ package tkom.ast.statement;
 import tkom.TokenID;
 import tkom.ast.expression.MathExpr;
 
-public class InitStatement implements Statement {
+public class InitStatement extends Statement {
     private TokenID type;
 
     private String name;
@@ -12,8 +12,16 @@ public class InitStatement implements Statement {
 
     private MathExpr rightExpr;
 
-    public InitStatement(TokenID type) {
+    public InitStatement(Statement parent, TokenID type, String name, MathExpr leftExpr, MathExpr rightExpr) {
+        super(parent);
         this.type = type;
+        this.name = name;
+        this.leftExpr = leftExpr;
+        this.rightExpr = rightExpr;
+    }
+
+    public InitStatement(Statement parent, TokenID type, String name, MathExpr leftExpr) {
+        this(parent, type, name, leftExpr, null);
     }
 
     @Override

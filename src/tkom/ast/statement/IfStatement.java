@@ -4,20 +4,17 @@ import tkom.ast.expression.LogicExpr;
 
 import java.util.LinkedList;
 
-public class IfStatement implements Statement {
+public class IfStatement extends Statement {
     private LogicExpr condition;
 
     private LinkedList<Statement> ifStatements;
 
-    private LinkedList<Statement> elseStatement;
+    private LinkedList<Statement> elseStatements;
 
-    public IfStatement() {
+    public IfStatement(Statement parent, LogicExpr condition) {
+        super(parent);
         ifStatements = new LinkedList<>();
-        elseStatement = new LinkedList<>();
-    }
-
-    public IfStatement(LogicExpr condition) {
-        this();
+        elseStatements = new LinkedList<>();
         this.condition = condition;
     }
 
@@ -26,7 +23,7 @@ public class IfStatement implements Statement {
     }
 
     public void addElseStatement(Statement statement) {
-        elseStatement.add(statement);
+        elseStatements.add(statement);
     }
 
     @Override

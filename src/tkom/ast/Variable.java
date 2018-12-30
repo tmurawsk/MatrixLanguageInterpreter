@@ -1,9 +1,13 @@
 package tkom.ast;
 
+import tkom.TokenID;
+
 import java.util.ArrayList;
 
 public class Variable {
     public String name;
+
+    public TokenID type;
 
     public ArrayList<ArrayList<Integer>> value;
 

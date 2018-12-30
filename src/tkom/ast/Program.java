@@ -6,23 +6,23 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class Program {
-    private LinkedList<InitStatement> initStatements;
+    private static LinkedList<InitStatement> initStatements;
 
-    private LinkedList<FunctionDef> functions;
+    private static LinkedList<FunctionDef> functions;
 
-    public HashMap<String, Variable> globalVariables;
+    public static HashMap<String, Variable> globalVariables;
 
-    public Program() {
+    static {
         initStatements = new LinkedList<>();
         functions = new LinkedList<>();
         globalVariables = new HashMap<>();
     }
 
-    public void addFunction(FunctionDef function) {
+    public static void addFunction(FunctionDef function) {
         functions.add(function);
     }
 
-    public void addInitStatement(InitStatement initStatement) {
+    public static void addInitStatement(InitStatement initStatement) {
         initStatements.add(initStatement);
     }
 }

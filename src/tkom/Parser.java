@@ -1,5 +1,7 @@
 package tkom;
 
+import tkom.exception.UnexpectedTokenException;
+
 public class Parser {
     private Lexer lexer;
 
@@ -11,5 +13,12 @@ public class Parser {
 //        do {
 //
 //        } while ();
+    }
+
+    private Token accept(TokenID tokenID) throws UnexpectedTokenException {
+        Token nextToken = lexer.readToken();
+        if(nextToken.getId() != tokenID)
+            throw new UnexpectedTokenException(nextToken);
+        return nextToken;
     }
 }

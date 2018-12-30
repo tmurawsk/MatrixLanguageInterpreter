@@ -4,18 +4,15 @@ import tkom.ast.expression.LogicExpr;
 
 import java.util.LinkedList;
 
-public class WhileStatement implements Statement {
+public class WhileStatement extends Statement {
     private LogicExpr condition;
 
     private LinkedList<Statement> statements;
 
-    public WhileStatement() {
-        statements = new LinkedList<>();
-    }
-
-    public WhileStatement(LogicExpr condition) {
-        this();
+    public WhileStatement(Statement parent, LogicExpr condition) {
+        super(parent);
         this.condition = condition;
+        statements = new LinkedList<>();
     }
 
     public void addStatement(Statement statement) {

@@ -23,7 +23,7 @@ public class Lexer {
     }
 
     public Token readToken() {
-        if(!tokens.isEmpty())
+        if (!tokens.isEmpty())
             return tokens.removeFirst();
         return getNextToken();
     }
@@ -44,12 +44,11 @@ public class Lexer {
             if (Character.isLetter(c))
                 return nameTokenHandler(c, positionBefore);
 
-            if (Character.isDigit(c))
+            if (Character.isDigit(c) && c != '0')
                 return numberTokenHandler(c, positionBefore);
 
-            if(c == '"') {
+            if (c == '"')
                 return stringTokenHandler(positionBefore);
-            }
 
             return otherTokenHandler(c, positionBefore);
         } catch (EOFException e) {

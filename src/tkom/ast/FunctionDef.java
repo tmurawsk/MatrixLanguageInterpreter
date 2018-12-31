@@ -5,9 +5,8 @@ import tkom.ast.statement.Statement;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 
-public class FunctionDef {
+public class FunctionDef extends Statement {
     public String name;
 
     public TokenID returnType;
@@ -16,17 +15,17 @@ public class FunctionDef {
 
     private LinkedList<Statement> statements;
 
-    private HashMap<String, Variable> localVariables;
+    private Variable result;
 
-    public FunctionDef() {
-        arguments = new LinkedList<>();
-        statements = new LinkedList<>();
+    private FunctionDef() {
         localVariables = new HashMap<>();
     }
 
-    public FunctionDef(String name) {
+    public FunctionDef(String name, TokenID returnType, LinkedList<Variable> arguments) {
         this();
         this.name = name;
+        this.returnType = returnType;
+        this.arguments = arguments;
     }
 
     public LinkedList<Variable> getArguments() {
@@ -37,11 +36,12 @@ public class FunctionDef {
         arguments.add(v);
     }
 
-    public void addStatement(Statement stmnt) {
-        statements.add(stmnt);
+    public void setStatements(LinkedList<Statement> statements) {
+        this.statements = statements;
     }
 
-    public Variable execute(List<Variable> givenArguments) {
-        return new Variable(); //TODO
+    @Override
+    public void execute() {
+        //TODO saves result to "result" variable
     }
 }

@@ -15,8 +15,9 @@ public class Variable {
         this.value = new ArrayList<>(new ArrayList<>());
     }
 
-    public Variable(String name) {
+    public Variable(TokenID type, String name) {
         this();
+        this.type = type;
         this.name = name;
     }
 
@@ -24,11 +25,16 @@ public class Variable {
         value = new ArrayList<>(width);
         for (int i = 0; i < width; i++)
             value.set(i, new ArrayList<>(height));
+
+        if(width == height && width == 1)
+            type = TokenID.Num;
+        else
+            type = TokenID.Mat;
     }
 
     public int get(int i, int j) {
         if (value == null || i > value.size() || j > value.get(0).size())
-            return 0; //throw exception?
+            return 0; //TODO throw exception?
 
         return value.get(i - 1).get(j - 1);
     }

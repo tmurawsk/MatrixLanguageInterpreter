@@ -1,6 +1,7 @@
 package tkom;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class Token {
@@ -13,6 +14,8 @@ public class Token {
     private static Map<TokenID, String> nameMap = initializeNameMap();
 
     private static Map<String, TokenID> keywordMap = initializeKeywordMap();
+
+    private static HashSet<TokenID> types = initializeTypeSet();
 
     Token(TokenID id, Position position) {
         this(id, position, getNameByToken(id));
@@ -48,6 +51,10 @@ public class Token {
     public static TokenID getTokenByKeyword(String keyword) {
         TokenID toReturn = keywordMap.get(keyword);
         return toReturn != null ? toReturn : TokenID.Invalid;
+    }
+
+    public static boolean isType(TokenID tokenID) {
+        return types.contains(tokenID);
     }
 
     private static Map<TokenID, String> initializeNameMap() {
@@ -115,5 +122,14 @@ public class Token {
         m.put("mat",    TokenID.Mat);
 
         return m;
+    }
+
+    private static HashSet<TokenID> initializeTypeSet() {
+        HashSet<TokenID> set = new HashSet<>();
+
+        set.add(TokenID.Num);
+        set.add(TokenID.Mat);
+
+        return set;
     }
 }

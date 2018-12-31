@@ -24,6 +24,15 @@ public class InitStatement extends Statement {
         this(parent, type, name, leftExpr, null);
     }
 
+    public void setExpressions(MathExpr leftExpr, MathExpr rightExpr) {
+        this.leftExpr = leftExpr;
+        this.rightExpr = rightExpr;
+    }
+
+    public InitStatement(Statement parent, TokenID type, String name) {
+        this(parent, type, name, null, null);
+    }
+
     @Override
     public void execute() {
         //TODO

@@ -19,6 +19,10 @@ public abstract class Statement {
         this.parentStatement = parentStatement;
     }
 
+    public void addVariable(Variable variable) {
+        localVariables.put(variable.name, variable);
+    }
+
     public Variable getVariable(String name) {
         Variable toReturn = localVariables.get(name);
 
@@ -26,6 +30,10 @@ public abstract class Statement {
             toReturn = parentStatement.getVariable(name);
 
         return toReturn;
+    }
+
+    public boolean variableExists(String name) {
+        return getVariable(name) != null;
     }
 
     public abstract void execute();

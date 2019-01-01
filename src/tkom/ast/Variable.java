@@ -1,7 +1,6 @@
 package tkom.ast;
 
 import tkom.TokenID;
-import tkom.ast.expression.MathExpr;
 
 import java.util.ArrayList;
 
@@ -10,11 +9,11 @@ public class Variable {
 
     public TokenID type;
 
-    private ArrayList<ArrayList<MathExpr>> valueExpressions;
+    private ArrayList<ArrayList<Value>> valueExpressions;
 
     private ArrayList<ArrayList<Integer>> value;
 
-    public Variable() {
+    private Variable() {
         this.valueExpressions = new ArrayList<>(new ArrayList<>());
         this.value = new ArrayList<>(new ArrayList<>());
     }
@@ -25,14 +24,33 @@ public class Variable {
         this.name = name;
     }
 
-    public Variable(int width, int height) {
-        valueExpressions = new ArrayList<>(width);
-        value = new ArrayList<>(width);
+    public Variable(ArrayList<ArrayList<Value>> valueExpressions) {
+        this.valueExpressions = valueExpressions;
+        initializeValueMatrix();
+    }
 
-        for (int i = 0; i < width; i++) {
-            valueExpressions.set(i, new ArrayList<>(height));
-            value.set(i, new ArrayList<>(height));
+    public Variable(int height, int width) {
+        valueExpressions = new ArrayList<>(height);
+        value = new ArrayList<>(height);
+
+        for (int i = 0; i < height; i++) {
+            valueExpressions.set(i, new ArrayList<>(width));
+            value.set(i, new ArrayList<>(width));
         }
+
+        if(height == width && height == 1)
+            type = TokenID.Num;
+        else
+            type = TokenID.Mat;
+    }
+
+    private void initializeValueMatrix() {
+        int width = valueExpressions.get(0).size();
+        int height = valueExpressions.size();
+        value = new ArrayList<>(height);
+
+        for (int i = 0; i < height; i++)
+            value.set(i, new ArrayList<>(width));
 
         if(width == height && width == 1)
             type = TokenID.Num;
@@ -48,17 +66,17 @@ public class Variable {
     }
 
     public Variable add(Variable v) {
-        if (value == null || v.value == null
-                || value.size() != v.value.size()
-                || value.get(0).size() != v.value.get(0).size())
-            return new Variable(); //TODO throw exception
-
-        Variable result = new Variable(value.size(), value.get(0).size());
-        for (int i = 0; i < value.size(); i++)
-            for (int j = 0; j < value.get(0).size(); j++)
-                result.value.get(i).set(j, get(i, j) + v.get(i, j));
-
-        return result;
+//        if (value == null || v.value == null
+//                || value.size() != v.value.size()
+//                || value.get(0).size() != v.value.get(0).size())
+//            return null; //TODO throw exception
+//
+//        Variable result = new Variable(value.size(), value.get(0).size());
+//        for (int i = 0; i < value.size(); i++)
+//            for (int j = 0; j < value.get(0).size(); j++)
+//                result.value.get(i).set(j, get(i, j) + v.get(i, j));
+//        return result;
+        return null; //TODO
     }
 
     public Variable multiply(Variable v) {

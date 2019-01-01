@@ -10,21 +10,18 @@ public class BaseMathExpr extends MathExpression {
 
     private BaseMathExpr(Statement parent) {
         super(parent);
-        isMinus = false;
     }
 
-    public BaseMathExpr(Statement parent, MathExpression expression) {
+    public BaseMathExpr(Statement parent, boolean isMinus, MathExpression expression) {
         this(parent);
+        this.isMinus = isMinus;
         this.expression = expression;
     }
 
-    public BaseMathExpr(Statement parent, Variable variable) {
+    public BaseMathExpr(Statement parent, boolean isMinus, Variable variable) {
         this(parent);
+        this.isMinus = isMinus;
         this.variable = variable;
-    }
-
-    public void setMinus() {
-        isMinus = true;
     }
 
     @Override

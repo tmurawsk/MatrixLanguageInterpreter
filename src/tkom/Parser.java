@@ -297,20 +297,64 @@ public class Parser {
         return null; //TODO
     }
 
-    private MathExpr parseMathExpr(Statement parent) {
-        return null; //TODO
+    private MathExpr parseMathExpr(Statement parent) throws UnexpectedTokenException {
+        MathExpr mathExpr = new MathExpr(parent, parseMultExpr(parent));
+        Token nextToken = lexer.peekToken();
+
+        while (nextToken.getId() == TokenID.Plus || nextToken.getId() == TokenID.Minus) {
+            if (nextToken.getId() == TokenID.Plus) {
+                accept(TokenID.Plus);
+                mathExpr.addPlus(parseMultExpr(parent));
+            } else {
+                accept(TokenID.Minus);
+                mathExpr.addMinus(parseMultExpr(parent));
+            }
+            nextToken = lexer.peekToken();
+        }
+
+        return mathExpr;
     }
 
-    private MultExpr parseMultExpr(Statement parent) {
-        return null; //TODO
+    private MultExpr parseMultExpr(Statement parent) throws UnexpectedTokenException {
+        MultExpr multExpr = new MultExpr(parent, parseBaseMathExpr(parent));
+        Token nextToken = lexer.peekToken();
+
+        while (nextToken.getId() == TokenID.Multiply || nextToken.getId() == TokenID.Divide) {
+            if (nextToken.getId() == TokenID.Multiply) {
+                accept(TokenID.Multiply);
+                multExpr.addMultiply(parseBaseMathExpr(parent));
+            } else {
+                accept(TokenID.Divide);
+                multExpr.addDivide(parseBaseMathExpr(parent));
+            }
+            nextToken = lexer.peekToken();
+        }
+
+        return multExpr;
     }
 
-    private BaseMathExpr parseBaseMathExpr(Statement parent) {
-        return null; //TODO
+    private BaseMathExpr parseBaseMathExpr(Statement parent) throws UnexpectedTokenException {
+        Token nextToken = lexer.peekToken();
+        boolean isMinus = false;
+        if (nextToken.getId() == TokenID.Minus) {
+            accept(TokenID.Minus);
+            isMinus = true;
+            nextToken = lexer.peekToken();
+        }
+
+        if (nextToken.getId() == TokenID.RoundBracketOpen)
+            return new BaseMathExpr(parent, isMinus, parseBracketMathExpr(parent));
+
+//        if (nextToken.getId())
+        //TODO finish this function, change everywhere parsing variable - it should take array of arrays of Value, not MathExpr
+        return null;
     }
 
-    private MathExpr parseBracketMathExpr(Statement parent) {
-        return null; //TODO
+    private MathExpr parseBracketMathExpr(Statement parent) throws UnexpectedTokenException {
+        accept(TokenID.RoundBracketOpen);
+        MathExpr mathExpr = parseMathExpr(parent);
+        accept(TokenID.RoundBracketClose);
+        return mathExpr;
     }
 
     private VariableCall parseVariable(Statement parent) throws UnexpectedTokenException, NotDefinedException {

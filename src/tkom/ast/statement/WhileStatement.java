@@ -15,8 +15,8 @@ public class WhileStatement extends Statement {
         statements = new LinkedList<>();
     }
 
-    public void addStatement(Statement statement) {
-        statements.add(statement);
+    public void setStatements(LinkedList<Statement> statements) {
+        this.statements = statements;
     }
 
     @Override

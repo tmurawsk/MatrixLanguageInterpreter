@@ -13,17 +13,17 @@ public class IfStatement extends Statement {
 
     public IfStatement(Statement parent, LogicExpr condition) {
         super(parent);
+        this.condition = condition;
         ifStatements = new LinkedList<>();
         elseStatements = new LinkedList<>();
-        this.condition = condition;
     }
 
-    public void addIfStatement(Statement statement) {
-        ifStatements.add(statement);
+    public void setIfStatements(LinkedList<Statement> ifStatements) {
+        this.ifStatements = ifStatements;
     }
 
-    public void addElseStatement(Statement statement) {
-        elseStatements.add(statement);
+    public void setElseStatements(LinkedList<Statement> elseStatements) {
+        this.elseStatements = elseStatements;
     }
 
     @Override

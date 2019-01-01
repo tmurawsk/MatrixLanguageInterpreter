@@ -1,13 +1,13 @@
 package tkom.ast.statement;
 
-import tkom.ast.Variable;
+import tkom.ast.VariableCall;
 
 public class ReadStatement extends Statement {
-    private Variable variable;
+    private VariableCall variableCall;
 
-    public ReadStatement(Statement parent, Variable variable) {
+    public ReadStatement(Statement parent, VariableCall variableCall) {
         super(parent);
-        this.variable = variable;
+        this.variableCall = variableCall;
     }
 
     @Override

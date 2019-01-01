@@ -1,6 +1,5 @@
 package tkom.ast.statement;
 
-import tkom.ast.expression.LogicExpr;
 import tkom.ast.expression.MathExpr;
 
 import java.util.LinkedList;
@@ -13,15 +12,11 @@ public class PrintStatement extends Statement {
         toPrint = new LinkedList<>();
     }
 
-    public void addString(String s) {
+    public void addPrintable(String s) {
         toPrint.add(new Printable(s));
     }
 
-    public void addLogicExpr(LogicExpr expr) {
-        toPrint.add(new Printable(expr));
-    }
-
-    public void addMathExpr(MathExpr expr) {
+    public void addPrintable(MathExpr expr) {
         toPrint.add(new Printable(expr));
     }
 
@@ -33,16 +28,10 @@ public class PrintStatement extends Statement {
     private class Printable {
         String string;
 
-        LogicExpr logicExpr;
-
         MathExpr mathExpr;
 
         public Printable(String string) {
             this.string = string;
-        }
-
-        public Printable(LogicExpr logicExpr) {
-            this.logicExpr = logicExpr;
         }
 
         public Printable(MathExpr mathExpr) {

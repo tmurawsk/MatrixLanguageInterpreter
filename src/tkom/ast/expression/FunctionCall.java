@@ -16,6 +16,10 @@ public class FunctionCall extends MathExpression {
         arguments = new LinkedList<>();
     }
 
+    public LinkedList<MathExpr> getArguments() {
+        return arguments;
+    }
+
     public void addArgument(MathExpr expr) {
         arguments.add(expr);
     }

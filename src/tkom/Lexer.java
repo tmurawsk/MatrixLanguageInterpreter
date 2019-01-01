@@ -8,23 +8,29 @@ import java.util.LinkedList;
 public class Lexer {
     private InputReader reader;
     private StringBuilder tokenValue;
-    private LinkedList<Token> tokens;
+    private LinkedList<Token> tokenQueue;
 
     public Lexer(InputStream stream) {
         reader = new InputReader(stream);
         tokenValue = new StringBuilder();
-        tokens = new LinkedList<>();
+        tokenQueue = new LinkedList<>();
     }
 
     public Token peekToken() {
+        if(!tokenQueue.isEmpty())
+            return tokenQueue.removeFirst();
+        return peekFollowingToken();
+    }
+
+    public Token peekFollowingToken() {
         Token token = getNextToken();
-        tokens.add(token);
+        tokenQueue.add(token);
         return token;
     }
 
     public Token readToken() {
-        if (!tokens.isEmpty())
-            return tokens.removeFirst();
+        if (!tokenQueue.isEmpty())
+            return tokenQueue.removeFirst();
         return getNextToken();
     }
 

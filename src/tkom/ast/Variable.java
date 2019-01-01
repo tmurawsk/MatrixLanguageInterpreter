@@ -1,6 +1,7 @@
 package tkom.ast;
 
 import tkom.TokenID;
+import tkom.ast.expression.MathExpr;
 
 import java.util.ArrayList;
 
@@ -9,9 +10,12 @@ public class Variable {
 
     public TokenID type;
 
-    public ArrayList<ArrayList<Integer>> value;
+    private ArrayList<ArrayList<MathExpr>> valueExpressions;
+
+    private ArrayList<ArrayList<Integer>> value;
 
     public Variable() {
+        this.valueExpressions = new ArrayList<>(new ArrayList<>());
         this.value = new ArrayList<>(new ArrayList<>());
     }
 
@@ -22,9 +26,13 @@ public class Variable {
     }
 
     public Variable(int width, int height) {
+        valueExpressions = new ArrayList<>(width);
         value = new ArrayList<>(width);
-        for (int i = 0; i < width; i++)
+
+        for (int i = 0; i < width; i++) {
+            valueExpressions.set(i, new ArrayList<>(height));
             value.set(i, new ArrayList<>(height));
+        }
 
         if(width == height && width == 1)
             type = TokenID.Num;
@@ -54,13 +62,11 @@ public class Variable {
     }
 
     public Variable multiply(Variable v) {
-        //TODO
-        return new Variable();
+        return null; //TODO
     }
 
     public Variable divide(Variable v) {
-        //TODO
-        return new Variable();
+        return null; //TODO
     }
 
     public String toString() {

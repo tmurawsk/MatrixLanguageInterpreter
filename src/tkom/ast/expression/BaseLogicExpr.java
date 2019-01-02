@@ -7,20 +7,16 @@ public class BaseLogicExpr extends LogicExpression {
     private MathExpr mathExpr;
     private LogicExpr logicExpr;
 
-    public BaseLogicExpr(Statement parent, MathExpr expr) {
+    public BaseLogicExpr(Statement parent, boolean isNegation, MathExpr expr) {
         super(parent);
-        isNegation = false;
+        this.isNegation = isNegation;
         mathExpr = expr;
     }
 
-    public BaseLogicExpr(Statement parent, LogicExpr expr) {
+    public BaseLogicExpr(Statement parent, boolean isNegation, LogicExpr expr) {
         super(parent);
-        isNegation = false;
+        this.isNegation = isNegation;
         logicExpr = expr;
-    }
-
-    public void setNegation() {
-        isNegation = true;
     }
 
     @Override

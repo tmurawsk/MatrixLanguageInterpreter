@@ -1,5 +1,6 @@
 package tkom.ast.statement;
 
+import tkom.ast.Program;
 import tkom.ast.Variable;
 
 import java.util.HashMap;
@@ -26,8 +27,8 @@ public abstract class Statement {
     public Variable getVariable(String name) {
         Variable toReturn = localVariables.get(name);
 
-        if(toReturn == null && parentStatement != null)
-            toReturn = parentStatement.getVariable(name);
+        if (toReturn == null)
+            toReturn = parentStatement != null ? parentStatement.getVariable(name) : Program.getVariable(name);
 
         return toReturn;
     }

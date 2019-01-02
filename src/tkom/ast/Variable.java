@@ -11,31 +11,35 @@ public class Variable {
 
     private ArrayList<ArrayList<Value>> valueExpressions;
 
-    private ArrayList<ArrayList<Integer>> value;
-
-    private Variable() {
-        this.valueExpressions = new ArrayList<>(new ArrayList<>());
-        this.value = new ArrayList<>(new ArrayList<>());
-    }
+    private ArrayList<ArrayList<Integer>> values;
 
     public Variable(TokenID type, String name) {
-        this();
         this.type = type;
         this.name = name;
     }
 
+    public Variable(Value value) {
+        ArrayList<ArrayList<Value>> matrix = new ArrayList<>(1);
+        ArrayList<Value> column = new ArrayList<>(1);
+        column.set(0, value);
+        matrix.set(0, column);
+
+        this.valueExpressions = matrix;
+        initializeValuesMatrix();
+    }
+
     public Variable(ArrayList<ArrayList<Value>> valueExpressions) {
         this.valueExpressions = valueExpressions;
-        initializeValueMatrix();
+        initializeValuesMatrix();
     }
 
     public Variable(int height, int width) {
         valueExpressions = new ArrayList<>(height);
-        value = new ArrayList<>(height);
+        values = new ArrayList<>(height);
 
         for (int i = 0; i < height; i++) {
             valueExpressions.set(i, new ArrayList<>(width));
-            value.set(i, new ArrayList<>(width));
+            values.set(i, new ArrayList<>(width));
         }
 
         if(height == width && height == 1)
@@ -44,13 +48,13 @@ public class Variable {
             type = TokenID.Mat;
     }
 
-    private void initializeValueMatrix() {
+    private void initializeValuesMatrix() {
         int width = valueExpressions.get(0).size();
         int height = valueExpressions.size();
-        value = new ArrayList<>(height);
+        values = new ArrayList<>(height);
 
         for (int i = 0; i < height; i++)
-            value.set(i, new ArrayList<>(width));
+            values.set(i, new ArrayList<>(width));
 
         if(width == height && width == 1)
             type = TokenID.Num;
@@ -59,10 +63,10 @@ public class Variable {
     }
 
     public int get(int i, int j) {
-        if (value == null || i > value.size() || j > value.get(0).size())
+        if (values == null || i > values.size() || j > values.get(0).size())
             return 0; //TODO throw exception?
 
-        return value.get(i - 1).get(j - 1);
+        return values.get(i - 1).get(j - 1);
     }
 
     public Variable add(Variable v) {
@@ -90,13 +94,13 @@ public class Variable {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         int maxInt = -1000000;
-        for (ArrayList<Integer> array : value)
+        for (ArrayList<Integer> array : values)
             for (int i : array)
                 maxInt = i > maxInt ? i : maxInt;
 
         int tabNumber = String.valueOf(maxInt).length() / 4 + 1;
-        for (int i = 0; i < value.size(); i++) {
-            for (int j = 0; j < value.get(0).size(); j++) {
+        for (int i = 0; i < values.size(); i++) {
+            for (int j = 0; j < values.get(0).size(); j++) {
                 int currInt = get(j, i);
                 sb.append(currInt);
                 for (int k = 0; k < tabNumber - String.valueOf(currInt).length() / 4; k++)

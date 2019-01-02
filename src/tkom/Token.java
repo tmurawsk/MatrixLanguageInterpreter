@@ -17,6 +17,8 @@ public class Token {
 
     private static HashSet<TokenID> types = initializeTypeSet();
 
+    private static HashSet<TokenID> relationOperators = initializeRelationOperatorsSet();
+
     Token(TokenID id, Position position) {
         this(id, position, getNameByToken(id));
     }
@@ -55,6 +57,10 @@ public class Token {
 
     public static boolean isType(TokenID tokenID) {
         return types.contains(tokenID);
+    }
+
+    public static boolean isRelationOperator(TokenID tokenID) {
+        return relationOperators.contains(tokenID);
     }
 
     private static Map<TokenID, String> initializeNameMap() {
@@ -129,6 +135,19 @@ public class Token {
 
         set.add(TokenID.Num);
         set.add(TokenID.Mat);
+
+        return set;
+    }
+
+    private static HashSet<TokenID> initializeRelationOperatorsSet() {
+        HashSet<TokenID> set = new HashSet<>();
+
+        set.add(TokenID.Equal);
+        set.add(TokenID.Unequal);
+        set.add(TokenID.Less);
+        set.add(TokenID.Greater);
+        set.add(TokenID.LessOrEqual);
+        set.add(TokenID.GreaterOrEqual);
 
         return set;
     }

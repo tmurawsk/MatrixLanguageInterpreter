@@ -1,12 +1,15 @@
 package tkom.ast.expression;
 
+import tkom.ast.FunctionDef;
 import tkom.ast.Variable;
 import tkom.ast.statement.Statement;
 
 import java.util.LinkedList;
 
 public class FunctionCall extends MathExpression {
-    public String name; //TODO rethink if not FunctionDef
+    public String name;
+
+    private FunctionDef functionDef;
 
     private LinkedList<MathExpr> arguments;
 
@@ -22,6 +25,10 @@ public class FunctionCall extends MathExpression {
 
     public void addArgument(MathExpr expr) {
         arguments.add(expr);
+    }
+
+    public void setFunctionDef(FunctionDef functionDef) {
+        this.functionDef = functionDef;
     }
 
     @Override

@@ -1,9 +1,6 @@
 package tkom;
 
-import tkom.ast.FunctionDef;
-import tkom.ast.Program;
-import tkom.ast.VariableCall;
-import tkom.ast.Variable;
+import tkom.ast.*;
 import tkom.ast.expression.*;
 import tkom.ast.statement.*;
 import tkom.exception.*;
@@ -18,10 +15,23 @@ public class Parser {
         this.lexer = lexer;
     }
 
-    public void parseProgram() {
-//        do {
-//
-//        } while ();
+    public void parseProgram() throws UnexpectedTokenException, NotDefinedException, DuplicateException, MissingReturnStatementException, UnknownTypeException {
+        Token nextToken = lexer.peekToken();
+
+        while (nextToken.getId() != TokenID.Eof) {
+            switch (nextToken.getId()) {
+                case Func:
+                    accept(TokenID.Func);
+                    Program.addFunction(parseFunctionDef());
+                    break;
+                case Name:
+                    Program.addInitStatement(parseInitStatement(null));
+                    break;
+                default:
+                    throw new UnexpectedTokenException(nextToken);
+            }
+            nextToken = lexer.peekToken();
+        }
     }
 
     private Token accept(TokenID tokenID) throws UnexpectedTokenException {
@@ -127,14 +137,16 @@ public class Parser {
         return statements;
     }
 
-    private InitStatement parseInitStatement(Statement parent) throws UnexpectedTokenException, UnknownTypeException, DuplicateException {
+    private InitStatement parseInitStatement(Statement parent) throws UnexpectedTokenException, UnknownTypeException, DuplicateException, NotDefinedException {
         Token type = accept(TokenID.Name);
         validateType(type);
         Token name = accept(TokenID.Name);
-        if (parent.variableExists(name.getValue()))
-            throw new DuplicateException(name.getPosition(), new Variable(type.getId(), name.getValue()));
-
         InitStatement initStatement = new InitStatement(parent, type.getId(), name.getValue());
+
+        if (initStatement.variableExists(name.getValue())) {
+            throw new DuplicateException(name.getPosition(), new Variable(type.getId(), name.getValue()));
+        }
+
         if (lexer.peekToken().getId() == TokenID.Assign) {
             accept(TokenID.Assign);
             if (lexer.peekToken().getId() == TokenID.SquareBracketOpen) {
@@ -155,13 +167,18 @@ public class Parser {
             }
         }
 
-        parent.addVariable(new Variable(type.getId(), name.getValue()));
+        Variable newVariable = new Variable(type.getId(), name.getValue());
+        if (parent != null)
+            parent.addVariable(newVariable);
+        else
+            Program.addGlobalVariable(newVariable);
+
         accept(TokenID.Semicolon);
         return initStatement;
     }
 
     private AssignStatement parseAssignStatement(Statement parent) throws UnexpectedTokenException, NotDefinedException {
-        VariableCall variableCall = parseVariable(parent);
+        VariableCall variableCall = parseVariableCall(parent);
         accept(TokenID.Assign);
         MathExpr expression = parseMathExpr(parent);
         //TODO validate if variableCall.type == expression.type
@@ -185,9 +202,11 @@ public class Parser {
         }
 
         accept(TokenID.RoundBracketClose);
-        if (!Program.functionExists(functionCall))
+        FunctionDef functionDef = Program.getFunctionDef(functionCall);
+        if (functionDef == null)
             throw new NotDefinedException(name.getPosition(), functionCall);
 
+        functionCall.setFunctionDef(functionDef);
         return functionCall;
     }
 
@@ -226,7 +245,7 @@ public class Parser {
         return whileStatement;
     }
 
-    private PrintStatement parsePrintStatement(Statement parent) throws UnexpectedTokenException {
+    private PrintStatement parsePrintStatement(Statement parent) throws UnexpectedTokenException, NotDefinedException {
         accept(TokenID.Print);
         accept(TokenID.RoundBracketOpen);
 
@@ -256,7 +275,7 @@ public class Parser {
         accept(TokenID.Read);
         accept(TokenID.RoundBracketOpen);
 
-        ReadStatement readStatement = new ReadStatement(parent, parseVariable(parent));
+        ReadStatement readStatement = new ReadStatement(parent, parseVariableCall(parent));
 
         accept(TokenID.RoundBracketClose);
         accept(TokenID.Semicolon);
@@ -270,34 +289,74 @@ public class Parser {
         return variable;
     }
 
-    private ReturnStatement parseReturnStatement(Statement parent) throws UnexpectedTokenException {
+    private ReturnStatement parseReturnStatement(Statement parent) throws UnexpectedTokenException, NotDefinedException {
         accept(TokenID.Return);
         MathExpr expr = parseMathExpr(parent);
         //TODO iterate up to parents, find FunctionDef and validate if functionDef.returnType == expr.type
         return new ReturnStatement(parent, expr);
     }
 
-    private LogicExpr parseLogicExpr(Statement parent) {
-        return null; //TODO
+    private LogicExpr parseLogicExpr(Statement parent) throws UnexpectedTokenException, NotDefinedException {
+        LogicExpr logicExpr = new LogicExpr(parent, parseAndExpr(parent));
+        Token nextToken = lexer.peekToken();
+
+        while (nextToken.getId() == TokenID.Or) {
+            accept(TokenID.Or);
+            logicExpr.addAndExpression(parseAndExpr(parent));
+            nextToken = lexer.peekToken();
+        }
+
+        return logicExpr;
     }
 
-    private AndExpr parseAndExpr(Statement parent) {
-        return null; //TODO
+    private AndExpr parseAndExpr(Statement parent) throws UnexpectedTokenException, NotDefinedException {
+        AndExpr andExpr = new AndExpr(parent, parseRelationExpr(parent));
+        Token nextToken = lexer.peekToken();
+
+        while (nextToken.getId() == TokenID.And) {
+            accept(TokenID.And);
+            andExpr.addRelationExpr(parseRelationExpr(parent));
+            nextToken = lexer.peekToken();
+        }
+
+        return andExpr;
     }
 
-    private RelationExpr parseRelationExpr(Statement parent) {
-        return null; //TODO
+    private RelationExpr parseRelationExpr(Statement parent) throws UnexpectedTokenException, NotDefinedException {
+        BaseLogicExpr leftExpression = parseBaseLogicExpr(parent);
+        Token nextToken = lexer.peekToken();
+
+        if (!Token.isRelationOperator(nextToken.getId()))
+            return new RelationExpr(parent, leftExpression);
+
+        return new RelationExpr(parent, leftExpression, accept(nextToken.getId()).getId(), parseBaseLogicExpr(parent));
     }
 
-    private BaseLogicExpr parseBaseLogicExpr(Statement parent) {
-        return null; //TODO
+    private BaseLogicExpr parseBaseLogicExpr(Statement parent) throws UnexpectedTokenException, NotDefinedException {
+        Token nextToken = lexer.peekToken();
+        boolean isNegation = false;
+
+        if (nextToken.getId() == TokenID.Negation) {
+            accept(TokenID.Negation);
+            isNegation = true;
+            nextToken = lexer.peekToken();
+        }
+
+        if (nextToken.getId() == TokenID.RoundBracketOpen)
+            return new BaseLogicExpr(parent, isNegation, parseBracketLogicExpr(parent));
+        else
+            return new BaseLogicExpr(parent, isNegation, parseMathExpr(parent));
     }
 
-    private LogicExpr parseBracketLogicExpr(Statement parent) {
-        return null; //TODO
+    private LogicExpr parseBracketLogicExpr(Statement parent) throws UnexpectedTokenException, NotDefinedException {
+        accept(TokenID.RoundBracketOpen);
+        LogicExpr logicExpr = parseLogicExpr(parent);
+        accept(TokenID.RoundBracketClose);
+
+        return logicExpr;
     }
 
-    private MathExpr parseMathExpr(Statement parent) throws UnexpectedTokenException {
+    private MathExpr parseMathExpr(Statement parent) throws UnexpectedTokenException, NotDefinedException {
         MathExpr mathExpr = new MathExpr(parent, parseMultExpr(parent));
         Token nextToken = lexer.peekToken();
 
@@ -315,7 +374,7 @@ public class Parser {
         return mathExpr;
     }
 
-    private MultExpr parseMultExpr(Statement parent) throws UnexpectedTokenException {
+    private MultExpr parseMultExpr(Statement parent) throws UnexpectedTokenException, NotDefinedException {
         MultExpr multExpr = new MultExpr(parent, parseBaseMathExpr(parent));
         Token nextToken = lexer.peekToken();
 
@@ -333,7 +392,7 @@ public class Parser {
         return multExpr;
     }
 
-    private BaseMathExpr parseBaseMathExpr(Statement parent) throws UnexpectedTokenException {
+    private BaseMathExpr parseBaseMathExpr(Statement parent) throws UnexpectedTokenException, NotDefinedException {
         Token nextToken = lexer.peekToken();
         boolean isMinus = false;
         if (nextToken.getId() == TokenID.Minus) {
@@ -342,22 +401,31 @@ public class Parser {
             nextToken = lexer.peekToken();
         }
 
-        if (nextToken.getId() == TokenID.RoundBracketOpen)
-            return new BaseMathExpr(parent, isMinus, parseBracketMathExpr(parent));
-
-//        if (nextToken.getId())
-        //TODO finish this function, change everywhere parsing variable - it should take array of arrays of Value, not MathExpr
-        return null;
+        switch (nextToken.getId()) {
+            case RoundBracketOpen:
+                return new BaseMathExpr(parent, isMinus, parseBracketMathExpr(parent));
+            case Number:
+                return new BaseMathExpr(parent, isMinus, new VariableCall(new Variable(new Value(Integer.valueOf(accept(TokenID.Number).getValue())))));
+            case SquareBracketOpen:
+                return new BaseMathExpr(parent, isMinus, new VariableCall(new Variable(parseMatrixLiteral(parent))));
+            case Name:
+                Token secondToken = lexer.peekFollowingToken();
+                if (secondToken.getId() == TokenID.RoundBracketOpen)
+                    return new BaseMathExpr(parent, isMinus, parseFunctionCall(parent));
+                return new BaseMathExpr(parent, isMinus, parseVariableCall(parent));
+            default:
+                throw new UnexpectedTokenException(nextToken);
+        }
     }
 
-    private MathExpr parseBracketMathExpr(Statement parent) throws UnexpectedTokenException {
+    private MathExpr parseBracketMathExpr(Statement parent) throws UnexpectedTokenException, NotDefinedException {
         accept(TokenID.RoundBracketOpen);
         MathExpr mathExpr = parseMathExpr(parent);
         accept(TokenID.RoundBracketClose);
         return mathExpr;
     }
 
-    private VariableCall parseVariable(Statement parent) throws UnexpectedTokenException, NotDefinedException {
+    private VariableCall parseVariableCall(Statement parent) throws UnexpectedTokenException, NotDefinedException {
         Token name = accept(TokenID.Name);
         VariableCall variableCall = new VariableCall(validateVariable(parent, name));
         if (lexer.peekToken().getId() == TokenID.SquareBracketOpen) {
@@ -377,10 +445,10 @@ public class Parser {
         return variableCall;
     }
 
-    private ArrayList<ArrayList<MathExpr>> parseMatrixLiteral(Statement parent) throws UnexpectedTokenException {
+    private ArrayList<ArrayList<Value>> parseMatrixLiteral(Statement parent) throws UnexpectedTokenException, NotDefinedException {
         accept(TokenID.SquareBracketOpen);
-        ArrayList<ArrayList<MathExpr>> matrix = new ArrayList<>();
-        ArrayList<MathExpr> firstRow = parseMatrixRow(parent, 0);
+        ArrayList<ArrayList<Value>> matrix = new ArrayList<>();
+        ArrayList<Value> firstRow = parseMatrixRow(parent, 0);
         int rowSizeLimit = firstRow.size();
         matrix.add(firstRow);
         while (lexer.peekToken().getId() == TokenID.Semicolon) {
@@ -391,14 +459,14 @@ public class Parser {
         return matrix;
     }
 
-    private ArrayList<MathExpr> parseMatrixRow(Statement parent, int rowSizeLimit) throws UnexpectedTokenException {
-        ArrayList<MathExpr> row = new ArrayList<>();
+    private ArrayList<Value> parseMatrixRow(Statement parent, int rowSizeLimit) throws UnexpectedTokenException, NotDefinedException {
+        ArrayList<Value> row = new ArrayList<>();
         MathExpr expr = parseMathExpr(parent);
-        row.add(expr);
+        row.add(new Value(expr));
         int rowSize = 1;
         while (lexer.peekToken().getId() == TokenID.Comma && (rowSizeLimit <= 0 || rowSize < rowSizeLimit)) {
             accept(TokenID.Comma);
-            row.add(parseMathExpr(parent));
+            row.add(new Value(parseMathExpr(parent)));
             rowSize++;
         }
         return row;

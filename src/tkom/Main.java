@@ -6,10 +6,15 @@ import java.io.FileNotFoundException;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Hello, world!");
 
+//        lexerTest();
+
+        parserTest();
+    }
+
+    public static void lexerTest() {
         try {
-            Lexer lexer = new Lexer(new FileInputStream("inputFiles/inputData.txt"));
+            Lexer lexer = new Lexer(new FileInputStream("inputFiles/invalidInputData.txt"));
             Token token;
 
             do {
@@ -17,6 +22,18 @@ public class Main {
                 System.out.println(Token.getNameByToken(token.getId()) + ":\t" + token.getValue());
             } while (token.getId() != TokenID.Eof);
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void parserTest() {
+        try {
+            Lexer lexer = new Lexer(new FileInputStream("inputFiles/validInputData.txt"));
+            Parser parser = new Parser(lexer);
+
+            parser.parseProgram();
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

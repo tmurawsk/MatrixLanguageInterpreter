@@ -10,7 +10,9 @@ func foo (num a) mat {
         while (j < 4) {
             result[i][j] = a;
             a = a + 1;
+            j = j + 1;
         }
+        i = i + 1;
     }
 
     return result;
@@ -23,8 +25,8 @@ func main () num {
     mat matrix = foo(n);
     wdokwodwkfjoEFJEJFOIWJEjeOVEOIVNEJVeojfaiovjoIEVANVNnvainvvainvvnnvjfnvjasdfghjkjhgfdsasdfghjkasdfghjkasdfghjasdfgh
 
-    print ("My num: " + n);
-    print ("My matrix: " + matrix);
+    print ("My num: ", n);
+    print ("My matrix: ", matrix);
 
     return 0;
 }

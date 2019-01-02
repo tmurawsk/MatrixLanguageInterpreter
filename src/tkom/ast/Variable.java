@@ -19,10 +19,10 @@ public class Variable {
     }
 
     public Variable(Value value) {
-        ArrayList<ArrayList<Value>> matrix = new ArrayList<>(1);
-        ArrayList<Value> column = new ArrayList<>(1);
-        column.set(0, value);
-        matrix.set(0, column);
+        ArrayList<ArrayList<Value>> matrix = new ArrayList<>();
+        ArrayList<Value> column = new ArrayList<>();
+        column.add(value);
+        matrix.add(column);
 
         this.valueExpressions = matrix;
         initializeValuesMatrix();
@@ -34,15 +34,21 @@ public class Variable {
     }
 
     public Variable(int height, int width) {
-        valueExpressions = new ArrayList<>(height);
-        values = new ArrayList<>(height);
+        valueExpressions = new ArrayList<>();
+        values = new ArrayList<>();
 
         for (int i = 0; i < height; i++) {
-            valueExpressions.set(i, new ArrayList<>(width));
-            values.set(i, new ArrayList<>(width));
+            ArrayList<Value> expressionRow = new ArrayList<>();
+            ArrayList<Integer> valueRow = new ArrayList<>();
+            for(int j = 0; j < width; j++) {
+                expressionRow.add(new Value(0));
+                valueRow.add(0);
+            }
+            valueExpressions.add(expressionRow);
+            values.add(valueRow);
         }
 
-        if(height == width && height == 1)
+        if (height == width && height == 1)
             type = TokenID.Num;
         else
             type = TokenID.Mat;
@@ -51,15 +57,15 @@ public class Variable {
     private void initializeValuesMatrix() {
         int width = valueExpressions.get(0).size();
         int height = valueExpressions.size();
-        values = new ArrayList<>(height);
+        values = new ArrayList<>();
 
-        for (int i = 0; i < height; i++)
-            values.set(i, new ArrayList<>(width));
+        for (int i = 0; i < height; i++) {
+            ArrayList<Integer> valueRow = new ArrayList<>();
+            for(int j = 0; j < width; j++)
+                valueRow.add(0);
 
-        if(width == height && width == 1)
-            type = TokenID.Num;
-        else
-            type = TokenID.Mat;
+            values.add(valueRow);
+        }
     }
 
     public int get(int i, int j) {
@@ -70,16 +76,6 @@ public class Variable {
     }
 
     public Variable add(Variable v) {
-//        if (value == null || v.value == null
-//                || value.size() != v.value.size()
-//                || value.get(0).size() != v.value.get(0).size())
-//            return null; //TODO throw exception
-//
-//        Variable result = new Variable(value.size(), value.get(0).size());
-//        for (int i = 0; i < value.size(); i++)
-//            for (int j = 0; j < value.get(0).size(); j++)
-//                result.value.get(i).set(j, get(i, j) + v.get(i, j));
-//        return result;
         return null; //TODO
     }
 

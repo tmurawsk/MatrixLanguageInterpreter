@@ -13,6 +13,7 @@ public class MultExpr extends MathExpression {
 
     public MultExpr(Statement parent, BaseMathExpr expr) {
         super(parent);
+        multOps = new LinkedList<>();
         baseMathExprs = new LinkedList<>();
         baseMathExprs.add(expr);
     }

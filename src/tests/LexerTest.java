@@ -59,7 +59,7 @@ class LexerTest {
         assertEquals("abd3", token.getValue());
 
         token = lexer.readToken();
-        assertEquals(TokenID.Main, token.getId());
+        assertEquals(TokenID.Name, token.getId());
         assertEquals(2, token.getPosition().lineNum);
         assertEquals(9, token.getPosition().charNum);
         assertEquals("main", token.getValue());

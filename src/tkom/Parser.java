@@ -21,10 +21,10 @@ public class Parser {
         while (nextToken.getId() != TokenID.Eof) {
             switch (nextToken.getId()) {
                 case Func:
-                    accept(TokenID.Func);
                     Program.addFunction(parseFunctionDef());
                     break;
-                case Name:
+                case Num:
+                case Mat:
                     Program.addInitStatement(parseInitStatement(null));
                     break;
                 default:
@@ -47,9 +47,7 @@ public class Parser {
         accept(TokenID.RoundBracketOpen);
         LinkedList<Variable> arguments = parseArguments();
         accept(TokenID.RoundBracketClose);
-        Token type = accept(TokenID.Name);
-
-        validateType(type);
+        Token type = parseType();
 
         FunctionDef functionDef = new FunctionDef(name.getValue(), type.getId(), arguments);
 
@@ -68,6 +66,12 @@ public class Parser {
             throw new UnknownTypeException(type);
     }
 
+    private Token parseType() throws UnknownTypeException {
+        Token type = lexer.readToken();
+        validateType(type);
+        return type;
+    }
+
     private boolean containsReturnStatement(LinkedList<Statement> statementBlock) {
         for (Statement statement : statementBlock)
             if (statement instanceof ReturnStatement)
@@ -82,15 +86,13 @@ public class Parser {
         if (lexer.peekToken().getId() == TokenID.RoundBracketClose)
             return arguments;
 
-        Token type = accept(TokenID.Name);
-        validateType(type);
+        Token type = parseType();
         Token name = accept(TokenID.Name);
         arguments.add(new Variable(type.getId(), name.getValue()));
 
         while (lexer.peekToken().getId() == TokenID.Comma) {
             accept(TokenID.Comma);
-            type = accept(TokenID.Name);
-            validateType(type);
+            type = parseType();
             name = accept(TokenID.Name);
             arguments.add(new Variable(type.getId(), name.getValue()));
         }
@@ -121,14 +123,11 @@ public class Parser {
                     statements.add(parseReturnStatement(parent));
                     break;
                 case Name:
-                    validateType(firstToken);
-                    Token secondToken = lexer.peekFollowingToken();
-                    if (secondToken.getId() == TokenID.Assign)
-                        statements.add(parseAssignStatement(parent));
-                    else if (secondToken.getId() == TokenID.Name)
-                        statements.add(parseInitStatement(parent));
-                    else
-                        throw new UnexpectedTokenException(secondToken);
+                    statements.add(parseAssignStatement(parent));
+                    break;
+                case Num:
+                case Mat:
+                    statements.add(parseInitStatement(parent));
                     break;
                 default:
                     isStatementMatched = false;
@@ -138,8 +137,7 @@ public class Parser {
     }
 
     private InitStatement parseInitStatement(Statement parent) throws UnexpectedTokenException, UnknownTypeException, DuplicateException, NotDefinedException {
-        Token type = accept(TokenID.Name);
-        validateType(type);
+        Token type = parseType();
         Token name = accept(TokenID.Name);
         InitStatement initStatement = new InitStatement(parent, type.getId(), name.getValue());
 
@@ -222,7 +220,8 @@ public class Parser {
 
         accept(TokenID.CurlyBracketClose);
 
-        if (lexer.peekToken().getId() != TokenID.Else) {
+        if (lexer.peekToken().getId() == TokenID.Else) {
+            accept(TokenID.Else);
             accept(TokenID.CurlyBracketOpen);
             ifStatement.setElseStatements(parseStatementBlock(parent));
             accept(TokenID.CurlyBracketClose);
@@ -293,6 +292,7 @@ public class Parser {
         accept(TokenID.Return);
         MathExpr expr = parseMathExpr(parent);
         //TODO iterate up to parents, find FunctionDef and validate if functionDef.returnType == expr.type
+        accept(TokenID.Semicolon);
         return new ReturnStatement(parent, expr);
     }
 

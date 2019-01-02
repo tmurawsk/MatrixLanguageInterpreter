@@ -18,7 +18,7 @@ public class Lexer {
 
     public Token peekToken() {
         if(!tokenQueue.isEmpty())
-            return tokenQueue.removeFirst();
+            return tokenQueue.getFirst();
         return peekFollowingToken();
     }
 
@@ -50,7 +50,7 @@ public class Lexer {
             if (Character.isLetter(c))
                 return nameTokenHandler(c, positionBefore);
 
-            if (Character.isDigit(c) && c != '0')
+            if (Character.isDigit(c))
                 return numberTokenHandler(c, positionBefore);
 
             if (c == '"')
@@ -90,6 +90,14 @@ public class Lexer {
 
     private Token numberTokenHandler(char c, Position positionBefore) throws IOException {
         long number = c - '0';
+
+        if(c == '0' && Character.isDigit(reader.peek())) {
+            do {
+                tokenValue.append(reader.read());
+            } while (Character.isLetterOrDigit(reader.peek()));
+
+            return new Token(TokenID.Invalid, positionBefore, tokenValue.toString());
+        }
 
         try {
             while (Character.isDigit(reader.peek())) {

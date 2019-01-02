@@ -66,7 +66,6 @@ public class Token {
     private static Map<TokenID, String> initializeNameMap() {
         Map<TokenID, String> m = new HashMap<>();
 
-        m.put(TokenID.Main,     "Main");
         m.put(TokenID.Func,     "Func");
         m.put(TokenID.If,       "If");
         m.put(TokenID.Else,     "Else");
@@ -116,7 +115,6 @@ public class Token {
     private static Map<String, TokenID> initializeKeywordMap() {
         Map<String, TokenID> m = new HashMap<>();
 
-        m.put("main",   TokenID.Main);
         m.put("func",   TokenID.Func);
         m.put("if",     TokenID.If);
         m.put("else",   TokenID.Else);

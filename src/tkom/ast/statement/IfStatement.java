@@ -9,21 +9,20 @@ public class IfStatement extends Statement {
 
     private LinkedList<Statement> ifStatements;
 
-    private LinkedList<Statement> elseStatements;
+    private ElseStatement elseStatement;
 
     public IfStatement(Statement parent, LogicExpr condition) {
         super(parent);
         this.condition = condition;
         ifStatements = new LinkedList<>();
-        elseStatements = new LinkedList<>();
     }
 
     public void setIfStatements(LinkedList<Statement> ifStatements) {
         this.ifStatements = ifStatements;
     }
 
-    public void setElseStatements(LinkedList<Statement> elseStatements) {
-        this.elseStatements = elseStatements;
+    public void addElseStatement(ElseStatement elseStatement) {
+        this.elseStatement = elseStatement;
     }
 
     @Override

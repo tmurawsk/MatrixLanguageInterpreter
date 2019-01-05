@@ -12,7 +12,7 @@ public class Main {
         parserTest();
     }
 
-    public static void lexerTest() {
+    private static void lexerTest() {
         try {
             Lexer lexer = new Lexer(new FileInputStream("inputFiles/invalidInputData.txt"));
             Token token;
@@ -26,7 +26,7 @@ public class Main {
         }
     }
 
-    public static void parserTest() {
+    private static void parserTest() {
         try {
             Lexer lexer = new Lexer(new FileInputStream("inputFiles/validInputData.txt"));
             Parser parser = new Parser(lexer);

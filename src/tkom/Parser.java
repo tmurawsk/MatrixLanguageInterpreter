@@ -220,14 +220,19 @@ public class Parser {
 
         accept(TokenID.CurlyBracketClose);
 
-        if (lexer.peekToken().getId() == TokenID.Else) {
-            accept(TokenID.Else);
-            accept(TokenID.CurlyBracketOpen);
-            ifStatement.setElseStatements(parseStatementBlock(parent));
-            accept(TokenID.CurlyBracketClose);
-        }
+        if (lexer.peekToken().getId() == TokenID.Else)
+            ifStatement.addElseStatement(parseElseStatement(parent));
 
         return ifStatement;
+    }
+
+    private ElseStatement parseElseStatement(Statement parent) throws UnexpectedTokenException, DuplicateException, UnknownTypeException, NotDefinedException {
+        ElseStatement elseStatement = new ElseStatement(parent);
+        accept(TokenID.Else);
+        accept(TokenID.CurlyBracketOpen);
+        elseStatement.setStatements(parseStatementBlock(elseStatement));
+        accept(TokenID.CurlyBracketClose);
+        return elseStatement;
     }
 
     private WhileStatement parseWhileStatement(Statement parent) throws UnexpectedTokenException, DuplicateException, UnknownTypeException, NotDefinedException {

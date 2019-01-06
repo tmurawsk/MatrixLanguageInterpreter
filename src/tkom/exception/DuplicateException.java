@@ -7,21 +7,17 @@ import tkom.ast.Variable;
 
 import java.util.LinkedList;
 
-public class DuplicateException extends Exception {
-    private DuplicateException(Position position, String message) {
-        super("In line: " + position.lineNum + ", " + position.charNum + ":\n\t"
-                + message);
+public class DuplicateException extends BaseException {
+    private DuplicateException(Position position, String subjectType, String subjectName) {
+        super(position, subjectType + " already defined: " + subjectName);
     }
 
     public DuplicateException(Position position, Variable variable) {
-        this(position, "Error: Variable already defined: " + variable.name);
+        this(position, "Variable", variable.name);
     }
 
     public DuplicateException(Position position, FunctionDef functionDef) {
-        this(position,
-                "Error: Function already defined: " + functionDef.name + "("
-                        + getArgumentTypesString(functionDef.getArguments()) + ")"
-        );
+        this(position, "Function", functionDef.name + "(" + getArgumentTypesString(functionDef.getArguments()) + ")");
     }
 
     private static String getArgumentTypesString(LinkedList<Variable> arguments) {

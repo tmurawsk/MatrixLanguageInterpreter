@@ -1,5 +1,6 @@
 package tkom.ast;
 
+import tkom.Position;
 import tkom.TokenID;
 import tkom.ast.statement.Statement;
 
@@ -17,12 +18,13 @@ public class FunctionDef extends Statement {
 
     private Variable result;
 
-    private FunctionDef() {
+    private FunctionDef(Position position) {
+        super(null, position);
         localVariables = new HashMap<>();
     }
 
-    public FunctionDef(String name, TokenID returnType, LinkedList<Variable> arguments) {
-        this();
+    public FunctionDef(Position position, String name, TokenID returnType, LinkedList<Variable> arguments) {
+        this(position);
         this.name = name;
         this.returnType = returnType;
         this.arguments = arguments;
@@ -32,10 +34,6 @@ public class FunctionDef extends Statement {
 
     public LinkedList<Variable> getArguments() {
         return arguments;
-    }
-
-    public void addArgument(Variable v) {
-        arguments.add(v);
     }
 
     public void setStatements(LinkedList<Statement> statements) {

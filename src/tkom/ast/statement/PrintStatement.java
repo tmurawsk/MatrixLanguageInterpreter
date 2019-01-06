@@ -1,5 +1,6 @@
 package tkom.ast.statement;
 
+import tkom.Position;
 import tkom.ast.expression.MathExpr;
 
 import java.util.LinkedList;
@@ -7,8 +8,8 @@ import java.util.LinkedList;
 public class PrintStatement extends Statement {
     private LinkedList<Printable> toPrint;
 
-    public PrintStatement(Statement parent) {
-        super(parent);
+    public PrintStatement(Statement parent, Position position) {
+        super(parent, position);
         toPrint = new LinkedList<>();
     }
 

@@ -1,5 +1,6 @@
 package tkom.ast.statement;
 
+import tkom.Position;
 import tkom.ast.Program;
 import tkom.ast.Variable;
 
@@ -10,14 +11,17 @@ public abstract class Statement {
 
     protected Statement parentStatement;
 
-    public Statement() {
+    protected Position position;
+
+    private Statement() {
         localVariables = new HashMap<>();
         parentStatement = null;
     }
 
-    public Statement(Statement parentStatement) {
+    public Statement(Statement parentStatement, Position position) {
         this();
         this.parentStatement = parentStatement;
+        this.position = position;
     }
 
     public void addVariable(Variable variable) {
@@ -31,6 +35,10 @@ public abstract class Statement {
             toReturn = parentStatement != null ? parentStatement.getVariable(name) : Program.getVariable(name);
 
         return toReturn;
+    }
+
+    public Position getPosition() {
+        return position;
     }
 
     public boolean variableExists(String name) {

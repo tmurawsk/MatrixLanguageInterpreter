@@ -1,5 +1,6 @@
 package tkom.ast.statement;
 
+import tkom.Position;
 import tkom.TokenID;
 import tkom.ast.expression.MathExpr;
 
@@ -12,25 +13,15 @@ public class InitStatement extends Statement {
 
     private MathExpr rightExpr;
 
-    public InitStatement(Statement parent, TokenID type, String name, MathExpr leftExpr, MathExpr rightExpr) {
-        super(parent);
+    public InitStatement(Statement parent, Position position, TokenID type, String name) {
+        super(parent, position);
         this.type = type;
         this.name = name;
-        this.leftExpr = leftExpr;
-        this.rightExpr = rightExpr;
-    }
-
-    public InitStatement(Statement parent, TokenID type, String name, MathExpr leftExpr) {
-        this(parent, type, name, leftExpr, null);
     }
 
     public void setExpressions(MathExpr leftExpr, MathExpr rightExpr) {
         this.leftExpr = leftExpr;
         this.rightExpr = rightExpr;
-    }
-
-    public InitStatement(Statement parent, TokenID type, String name) {
-        this(parent, type, name, null, null);
     }
 
     @Override

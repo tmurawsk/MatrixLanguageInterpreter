@@ -4,17 +4,16 @@ import tkom.Position;
 import tkom.ast.Variable;
 import tkom.ast.expression.FunctionCall;
 
-public class NotDefinedException extends Exception {
-    private NotDefinedException(Position position, String message) {
-        super("In line: " + position.lineNum + ", " + position.charNum + ":\n\t"
-                + message);
+public class NotDefinedException extends BaseException {
+    private NotDefinedException(Position position, String subjectType, String subjectName) {
+        super(position, subjectType + " not defined: " + subjectName);
     }
 
     public NotDefinedException(Position position, Variable variable) {
-        this(position, "Error: Variable not defined: " + variable.name);
+        this(position, "Variable", variable.name);
     }
 
     public NotDefinedException(Position position, FunctionCall functionCall) {
-        this(position, "Error: Function not defined: " + functionCall.name);
+        this(position, "Function", functionCall.name);
     }
 }

@@ -1,5 +1,6 @@
 package tkom.ast.statement;
 
+import tkom.Position;
 import tkom.ast.expression.LogicExpr;
 
 import java.util.LinkedList;
@@ -9,8 +10,8 @@ public class WhileStatement extends Statement {
 
     private LinkedList<Statement> statements;
 
-    public WhileStatement(Statement parent, LogicExpr condition) {
-        super(parent);
+    public WhileStatement(Statement parent, Position position, LogicExpr condition) {
+        super(parent, position);
         this.condition = condition;
         statements = new LinkedList<>();
     }

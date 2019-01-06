@@ -24,11 +24,13 @@ public class Variable {
         column.add(value);
         matrix.add(column);
 
+        this.type = TokenID.Num;
         this.valueExpressions = matrix;
         initializeValuesMatrix();
     }
 
     public Variable(ArrayList<ArrayList<Value>> valueExpressions) {
+        this.type = (valueExpressions.size() > 1 || valueExpressions.get(0).size() > 1) ? TokenID.Mat : TokenID.Num;
         this.valueExpressions = valueExpressions;
         initializeValuesMatrix();
     }
@@ -48,13 +50,13 @@ public class Variable {
             values.add(valueRow);
         }
 
-        if (height == width && height == 1)
-            type = TokenID.Num;
-        else
-            type = TokenID.Mat;
+        type = (height == width && height == 1) ? TokenID.Num : TokenID.Mat;
     }
 
     private void initializeValuesMatrix() {
+        if(valueExpressions == null)
+            return;
+
         int width = valueExpressions.get(0).size();
         int height = valueExpressions.size();
         values = new ArrayList<>();

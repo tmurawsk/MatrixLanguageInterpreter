@@ -1,5 +1,6 @@
 package tkom.ast.statement;
 
+import tkom.Position;
 import tkom.ast.expression.LogicExpr;
 
 import java.util.LinkedList;
@@ -11,8 +12,8 @@ public class IfStatement extends Statement {
 
     private ElseStatement elseStatement;
 
-    public IfStatement(Statement parent, LogicExpr condition) {
-        super(parent);
+    public IfStatement(Statement parent, Position position, LogicExpr condition) {
+        super(parent, position);
         this.condition = condition;
         ifStatements = new LinkedList<>();
     }

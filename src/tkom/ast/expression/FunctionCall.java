@@ -1,5 +1,6 @@
 package tkom.ast.expression;
 
+import tkom.Position;
 import tkom.ast.FunctionDef;
 import tkom.ast.Variable;
 import tkom.ast.statement.Statement;
@@ -13,8 +14,8 @@ public class FunctionCall extends MathExpression {
 
     private LinkedList<MathExpr> arguments;
 
-    public FunctionCall(Statement parent, String name) {
-        super(parent);
+    public FunctionCall(Statement parent, Position position, String name) {
+        super(parent, position);
         this.name = name;
         arguments = new LinkedList<>();
     }
@@ -29,6 +30,7 @@ public class FunctionCall extends MathExpression {
 
     public void setFunctionDef(FunctionDef functionDef) {
         this.functionDef = functionDef;
+        this.type = functionDef.returnType;
     }
 
     @Override

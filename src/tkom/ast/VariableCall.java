@@ -1,5 +1,6 @@
 package tkom.ast;
 
+import tkom.Position;
 import tkom.TokenID;
 import tkom.ast.expression.MathExpr;
 
@@ -10,16 +11,13 @@ public class VariableCall {
 
     private MathExpr row;
 
-    public VariableCall(Variable variable) {
+    private Position position;
+
+    public VariableCall(Variable variable, Position position) {
         this.variable = variable;
+        this.position = position;
         column = null;
         row = null;
-    }
-
-    public VariableCall(Variable variable, MathExpr column, MathExpr row) {
-        this.variable = variable;
-        this.column = column;
-        this.row = row;
     }
 
     public TokenID getType() {
@@ -32,5 +30,9 @@ public class VariableCall {
 
     public void setRow(MathExpr row) {
         this.row = row;
+    }
+
+    public Position getPosition() {
+        return position;
     }
 }

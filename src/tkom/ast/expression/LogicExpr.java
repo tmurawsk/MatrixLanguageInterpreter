@@ -1,5 +1,6 @@
 package tkom.ast.expression;
 
+import tkom.Position;
 import tkom.ast.statement.Statement;
 
 import java.util.LinkedList;
@@ -7,8 +8,8 @@ import java.util.LinkedList;
 public class LogicExpr extends LogicExpression {
     private LinkedList<AndExpr> andExprs;
 
-    public LogicExpr(Statement parent, AndExpr expr) {
-        super(parent);
+    public LogicExpr(Statement parent, Position position, AndExpr expr) {
+        super(parent, position);
         andExprs = new LinkedList<>();
         andExprs.add(expr);
     }

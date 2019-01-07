@@ -21,7 +21,7 @@ public class VariableCall {
     }
 
     public TokenID getType() {
-        return (column == null || row == null) ? TokenID.Mat : TokenID.Num;
+        return (column == null || row == null) ? variable.getType() : TokenID.Num;
     }
 
     public void setColumn(MathExpr column) {

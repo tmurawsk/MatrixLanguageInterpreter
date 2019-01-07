@@ -2,9 +2,9 @@ package tkom.exception;
 
 import tkom.Position;
 import tkom.ast.Variable;
-import tkom.ast.expression.FunctionCall;
+import tkom.ast.FunctionCall;
 
-public class NotDefinedException extends BaseException {
+public class NotDefinedException extends ParseException {
     private NotDefinedException(Position position, String subjectType, String subjectName) {
         super(position, subjectType + " not defined: " + subjectName);
     }

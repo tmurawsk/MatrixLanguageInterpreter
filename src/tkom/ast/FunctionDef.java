@@ -40,6 +40,10 @@ public class FunctionDef extends Statement {
         this.statements = statements;
     }
 
+    public Variable evaluate(LinkedList<Variable> parameters) {
+        return null; //TODO
+    }
+
     @Override
     public void execute() {
         //TODO saves result to "result" variable

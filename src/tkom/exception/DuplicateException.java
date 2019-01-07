@@ -7,7 +7,7 @@ import tkom.ast.Variable;
 
 import java.util.LinkedList;
 
-public class DuplicateException extends BaseException {
+public class DuplicateException extends ParseException {
     private DuplicateException(Position position, String subjectType, String subjectName) {
         super(position, subjectType + " already defined: " + subjectName);
     }
@@ -23,7 +23,7 @@ public class DuplicateException extends BaseException {
     private static String getArgumentTypesString(LinkedList<Variable> arguments) {
         LinkedList<String> types = new LinkedList<>();
         for (Variable v : arguments)
-            types.add(Token.getNameByToken(v.type));
+            types.add(Token.getNameByToken(v.getType()));
         return String.join(", ", types);
     }
 }

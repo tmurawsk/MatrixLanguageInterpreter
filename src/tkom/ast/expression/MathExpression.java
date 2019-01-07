@@ -24,6 +24,10 @@ public abstract class MathExpression {
         return type;
     }
 
+    public Statement getParent() {
+        return parentStatement;
+    }
+
     public void setParent(Statement parentStatement) {
         this.parentStatement = parentStatement;
     }

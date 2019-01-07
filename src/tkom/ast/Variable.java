@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Variable {
     public String name;
 
-    public TokenID type;
+    private TokenID type;
 
     private ArrayList<ArrayList<Value>> valueExpressions;
 
@@ -51,6 +51,10 @@ public class Variable {
         }
 
         type = (height == width && height == 1) ? TokenID.Num : TokenID.Mat;
+    }
+
+    public TokenID getType() {
+        return type;
     }
 
     private void initializeValuesMatrix() {

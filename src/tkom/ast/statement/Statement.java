@@ -41,6 +41,10 @@ public abstract class Statement {
         return position;
     }
 
+    public Statement getParent() {
+        return parentStatement;
+    }
+
     public boolean variableExists(String name) {
         return getVariable(name) != null;
     }

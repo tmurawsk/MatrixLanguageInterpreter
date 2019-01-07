@@ -4,9 +4,8 @@ import tkom.Position;
 import tkom.Token;
 import tkom.TokenID;
 import tkom.ast.FunctionDef;
-import tkom.ast.Variable;
 
-public class TypeMismatchException extends BaseException {
+public class TypeMismatchException extends ParseException {
     private TypeMismatchException(Position position, String subject, String expectedType, String givenType) {
         super(position, subject + " mismatch.\n\t\texpected: " + expectedType + "\n\t\twas: " + givenType);
     }

@@ -7,11 +7,11 @@ import tkom.ast.Variable;
 import java.util.HashMap;
 
 public abstract class Statement {
-    protected HashMap<String, Variable> localVariables;
-
-    protected Statement parentStatement;
+    private Statement parentStatement;
 
     protected Position position;
+
+    protected HashMap<String, Variable> localVariables;
 
     private Statement() {
         localVariables = new HashMap<>();

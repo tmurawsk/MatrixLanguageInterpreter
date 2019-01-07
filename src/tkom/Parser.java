@@ -8,14 +8,14 @@ import tkom.exception.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class Parser {
+class Parser {
     private Lexer lexer;
 
-    public Parser(Lexer lexer) {
+    Parser(Lexer lexer) {
         this.lexer = lexer;
     }
 
-    public void parseProgram() throws ParseException {
+    void parseProgram() throws ParseException {
         Token nextToken = lexer.peekToken();
 
         while (nextToken.getId() != TokenID.Eof) {
@@ -316,7 +316,7 @@ public class Parser {
 
         FunctionDef functionDef = (FunctionDef) parent;
         if (functionDef.returnType != expr.getType())
-            throw new TypeMismatchException(expr.getPosition(), functionDef.returnType, expr.getType());
+            throw new TypeMismatchException(expr.getPosition(), functionDef, expr.getType());
     }
 
     private LogicExpr parseLogicExpr(Statement parent) throws ParseException {

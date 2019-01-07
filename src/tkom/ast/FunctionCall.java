@@ -20,7 +20,7 @@ public class FunctionCall extends Statement {
         parameters = new LinkedList<>();
     }
 
-    public LinkedList<MathExpr> getParameters() {
+    LinkedList<MathExpr> getParameters() {
         return parameters;
     }
 

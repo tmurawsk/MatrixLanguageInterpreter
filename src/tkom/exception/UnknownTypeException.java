@@ -5,6 +5,6 @@ import tkom.Token;
 public class UnknownTypeException extends ParseException {
 
     public UnknownTypeException(Token token) {
-        super(token.getPosition(), "Error: Unknown type: " + token.getValue());
+        super(token.getPosition(), "Unknown type: " + token.getValue());
     }
 }

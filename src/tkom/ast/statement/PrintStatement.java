@@ -31,11 +31,11 @@ public class PrintStatement extends Statement {
 
         MathExpr mathExpr;
 
-        public Printable(String string) {
+        Printable(String string) {
             this.string = string;
         }
 
-        public Printable(MathExpr mathExpr) {
+        Printable(MathExpr mathExpr) {
             this.mathExpr = mathExpr;
         }
     }

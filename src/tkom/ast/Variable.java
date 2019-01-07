@@ -42,7 +42,7 @@ public class Variable {
         for (int i = 0; i < height; i++) {
             ArrayList<Value> expressionRow = new ArrayList<>();
             ArrayList<Integer> valueRow = new ArrayList<>();
-            for(int j = 0; j < width; j++) {
+            for (int j = 0; j < width; j++) {
                 expressionRow.add(new Value(0));
                 valueRow.add(0);
             }
@@ -58,7 +58,7 @@ public class Variable {
     }
 
     private void initializeValuesMatrix() {
-        if(valueExpressions == null)
+        if (valueExpressions == null)
             return;
 
         int width = valueExpressions.get(0).size();
@@ -67,14 +67,14 @@ public class Variable {
 
         for (int i = 0; i < height; i++) {
             ArrayList<Integer> valueRow = new ArrayList<>();
-            for(int j = 0; j < width; j++)
+            for (int j = 0; j < width; j++)
                 valueRow.add(0);
 
             values.add(valueRow);
         }
     }
 
-    public int get(int i, int j) {
+    int get(int i, int j) {
         if (values == null || i > values.size() || j > values.get(0).size())
             return 0; //TODO throw exception?
 

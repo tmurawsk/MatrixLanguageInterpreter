@@ -16,13 +16,13 @@ public class Lexer {
         tokenQueue = new LinkedList<>();
     }
 
-    public Token peekToken() {
-        if(!tokenQueue.isEmpty())
+    Token peekToken() {
+        if (!tokenQueue.isEmpty())
             return tokenQueue.getFirst();
         return peekFollowingToken();
     }
 
-    public Token peekFollowingToken() {
+    Token peekFollowingToken() {
         Token token = getNextToken();
         tokenQueue.add(token);
         return token;
@@ -91,7 +91,7 @@ public class Lexer {
     private Token numberTokenHandler(char c, Position positionBefore) throws IOException {
         long number = c - '0';
 
-        if(c == '0' && Character.isDigit(reader.peek())) {
+        if (c == '0' && Character.isDigit(reader.peek())) {
             do {
                 tokenValue.append(reader.read());
             } while (Character.isLetterOrDigit(reader.peek()));

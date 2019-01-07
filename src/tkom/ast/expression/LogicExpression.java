@@ -4,11 +4,11 @@ import tkom.Position;
 import tkom.ast.statement.Statement;
 
 public abstract class LogicExpression {
-    protected Statement parentStatement;
+    private Statement parentStatement;
 
     private Position position;
 
-    public LogicExpression(Statement parentStatement, Position position) {
+    LogicExpression(Statement parentStatement, Position position) {
         this.parentStatement = parentStatement;
         this.position = position;
     }

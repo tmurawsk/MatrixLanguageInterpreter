@@ -28,7 +28,7 @@ public class FunctionDef extends Statement {
         this.name = name;
         this.returnType = returnType;
         this.arguments = arguments;
-        for(Variable v : arguments)
+        for (Variable v : arguments)
             localVariables.put(v.name, v);
     }
 

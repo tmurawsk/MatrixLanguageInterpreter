@@ -50,16 +50,16 @@ public class Token {
         return toReturn != null ? toReturn : nameMap.get(TokenID.Invalid);
     }
 
-    public static TokenID getTokenByKeyword(String keyword) {
+    static TokenID getTokenByKeyword(String keyword) {
         TokenID toReturn = keywordMap.get(keyword);
         return toReturn != null ? toReturn : TokenID.Invalid;
     }
 
-    public static boolean isType(TokenID tokenID) {
+    static boolean isType(TokenID tokenID) {
         return types.contains(tokenID);
     }
 
-    public static boolean isRelationOperator(TokenID tokenID) {
+    static boolean isRelationOperator(TokenID tokenID) {
         return relationOperators.contains(tokenID);
     }
 

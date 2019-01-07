@@ -1,7 +1,6 @@
 package tkom.ast;
 
 import tkom.ast.statement.InitStatement;
-import tkom.exception.DuplicateException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -52,7 +51,7 @@ public class Program {
         return null;
     }
 
-    public static boolean isFunctionDuplicate(FunctionDef functionDef) throws DuplicateException {
+    public static boolean isFunctionDuplicate(FunctionDef functionDef) {
         for (FunctionDef def : functions)
             if (def.name.equals(functionDef.name) && def.getArguments().size() == functionDef.getArguments().size()) {
                 boolean matched = true;

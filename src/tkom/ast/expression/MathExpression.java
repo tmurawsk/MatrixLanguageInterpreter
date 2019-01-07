@@ -6,13 +6,13 @@ import tkom.ast.Variable;
 import tkom.ast.statement.Statement;
 
 public abstract class MathExpression {
-    protected Statement parentStatement;
+    private Statement parentStatement;
 
     protected TokenID type;
 
     private Position position;
 
-    public MathExpression(Statement parentStatement, Position position) {
+    MathExpression(Statement parentStatement, Position position) {
         this.parentStatement = parentStatement;
         this.position = position;
         type = TokenID.Invalid;

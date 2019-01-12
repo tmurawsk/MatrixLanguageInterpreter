@@ -11,11 +11,15 @@ import java.util.LinkedList;
 class Parser {
     private Lexer lexer;
 
+    private ArrayList<FunctionCall> functionCallsToValidate;
+
     Parser(Lexer lexer) {
         this.lexer = lexer;
+        functionCallsToValidate = new ArrayList<>();
     }
 
     void parseProgram() throws ParseException {
+        functionCallsToValidate.clear();
         Token nextToken = lexer.peekToken();
 
         while (nextToken.getId() != TokenID.Eof) {
@@ -31,6 +35,17 @@ class Parser {
                     throw new UnexpectedTokenException(nextToken);
             }
             nextToken = lexer.peekToken();
+        }
+        validateFunctionCalls();
+    }
+
+    private void validateFunctionCalls() throws NotDefinedException {
+        for (FunctionCall functionCall : functionCallsToValidate) {
+            FunctionDef functionDef = Program.getFunctionDef(functionCall);
+            if (functionDef == null)
+                throw new NotDefinedException(functionCall.getPosition(), functionCall);
+
+            functionCall.setFunctionDef(functionDef);
         }
     }
 
@@ -157,8 +172,8 @@ class Parser {
                 initStatement.setExpressions(parseMatrixDimension(parent), parseMatrixDimension(parent));
             } else {
                 MathExpr expr = parseMathExpr(parent);
-                if (type.getId() != expr.getType())
-                    throw new TypeMismatchException(expr.getPosition(), type.getId(), expr.getType());
+//                if (type.getId() != expr.getType())
+//                    throw new TypeMismatchException(expr.getPosition(), type.getId(), expr.getType());
                 initStatement.setExpressions(expr, null);
             }
         }
@@ -176,8 +191,8 @@ class Parser {
     private MathExpr parseMatrixDimension(Statement parent) throws ParseException {
         accept(TokenID.SquareBracketOpen);
         MathExpr expr = parseMathExpr(parent);
-        if (expr.getType() != TokenID.Num)
-            throw new TypeMismatchException(expr.getPosition(), TokenID.Num, expr.getType());
+//        if (expr.getType() != TokenID.Num)
+//            throw new TypeMismatchException(expr.getPosition(), TokenID.Num, expr.getType());
         accept(TokenID.SquareBracketClose);
         return expr;
     }
@@ -186,8 +201,8 @@ class Parser {
         VariableCall variableCall = parseVariableCall(parent);
         accept(TokenID.Assign);
         MathExpr expression = parseMathExpr(parent);
-        if (variableCall.getType() != expression.getType())
-            throw new TypeMismatchException(expression.getPosition(), variableCall.getType(), expression.getType());
+//        if (variableCall.getType() != expression.getType())
+//            throw new TypeMismatchException(expression.getPosition(), variableCall.getType(), expression.getType());
         accept(TokenID.Semicolon);
         return new AssignStatement(parent, variableCall.getPosition(), variableCall, expression);
     }
@@ -208,11 +223,8 @@ class Parser {
         }
 
         accept(TokenID.RoundBracketClose);
-        FunctionDef functionDef = Program.getFunctionDef(functionCall);
-        if (functionDef == null)
-            throw new NotDefinedException(name.getPosition(), functionCall);
+        functionCallsToValidate.add(functionCall);
 
-        functionCall.setFunctionDef(functionDef);
         return functionCall;
     }
 
@@ -304,7 +316,7 @@ class Parser {
     private ReturnStatement parseReturnStatement(Statement parent) throws ParseException {
         Token firstToken = accept(TokenID.Return);
         MathExpr expr = parseMathExpr(parent);
-        validateReturnStatementType(expr);
+//        validateReturnStatementType(expr);
         accept(TokenID.Semicolon);
         return new ReturnStatement(parent, firstToken.getPosition(), expr);
     }

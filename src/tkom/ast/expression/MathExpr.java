@@ -18,24 +18,22 @@ public class MathExpr extends MathExpression {
         addOps = new LinkedList<>();
         multExprs = new LinkedList<>();
         multExprs.add(expression);
-        type = expression.getType();
+        type = TokenID.Any;
     }
 
-    public void addPlus(MultExpr expr) throws TypeMismatchException {
+    public void addPlus(MultExpr expr) {
         multExprs.add(expr);
         addOps.add(TokenID.Plus);
-        updateType(expr);
     }
 
-    public void addMinus(MultExpr expr) throws TypeMismatchException {
+    public void addMinus(MultExpr expr) {
         multExprs.add(expr);
         addOps.add(TokenID.Minus);
-        updateType(expr);
     }
 
-    private void updateType(MultExpr expr) throws TypeMismatchException {
-        if (type != expr.getType())
-            throw new TypeMismatchException(expr.getPosition(), type, expr.getType());
+    @Override
+    TokenID evaluateType() {
+        return multExprs.getFirst().getType();
     }
 
     @Override

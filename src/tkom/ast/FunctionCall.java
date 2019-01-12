@@ -34,7 +34,7 @@ public class FunctionCall extends Statement {
 
     public TokenID getType() {
         if (functionDef == null)
-            return TokenID.Invalid;
+            return TokenID.Any;
         return functionDef.returnType;
     }
 

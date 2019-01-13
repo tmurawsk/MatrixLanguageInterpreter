@@ -41,6 +41,10 @@ public class FunctionDef extends Statement {
         this.statements = statements;
     }
 
+    public void addVariable(Variable variable) {
+        localVariables.peek().put(variable.name, variable);
+    }
+
     Variable getVariable(String name) {
         for (HashMap<String, Variable> variables : localVariables) {
             Variable v = variables.get(name);

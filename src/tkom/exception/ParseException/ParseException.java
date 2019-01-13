@@ -1,4 +1,4 @@
-package tkom.exception;
+package tkom.exception.ParseException;
 
 import tkom.Position;
 

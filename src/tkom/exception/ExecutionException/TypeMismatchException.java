@@ -1,11 +1,11 @@
-package tkom.exception;
+package tkom.exception.ExecutionException;
 
 import tkom.Position;
 import tkom.Token;
 import tkom.TokenID;
 import tkom.ast.FunctionDef;
 
-public class TypeMismatchException extends ParseException {
+public class TypeMismatchException extends ExecutionException {
     private TypeMismatchException(Position position, String subject, String expectedType, String givenType) {
         super(position, subject + " mismatch.\n\t\texpected: " + expectedType + "\n\t\twas: " + givenType);
     }

@@ -1,6 +1,10 @@
 package tkom.ast;
 
+import tkom.Position;
 import tkom.ast.statement.InitStatement;
+import tkom.ast.statement.Statement;
+import tkom.exception.ExecutionException.ExecutionException;
+import tkom.exception.ExecutionException.MissingMainException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -30,8 +34,11 @@ public class Program {
         initStatements.add(initStatement);
     }
 
-    public static void addGlobalVariable(Variable variable) {
-        globalVariables.put(variable.name, variable);
+    public static void addVariable(Variable variable) {
+        if (functionCallStack.empty())
+            globalVariables.put(variable.name, variable);
+        else
+            functionCallStack.peek().addVariable(variable);
     }
 
     public static Variable getVariable(String name) {
@@ -74,5 +81,24 @@ public class Program {
                     return true;
             }
         return false;
+    }
+
+    private static FunctionDef getMainFunction() {
+        for (FunctionDef functionDef : functionDefinitions)
+            if (functionDef.name.equals("main") && functionDef.getArguments().isEmpty())
+                return functionDef;
+
+        return null;
+    }
+
+    public static void execute() throws ExecutionException {
+        for (InitStatement initStatement : initStatements)
+            initStatement.execute();
+
+        FunctionDef main = getMainFunction();
+        if (main == null)
+            throw new MissingMainException(new Position());
+
+        main.execute();
     }
 }

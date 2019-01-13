@@ -3,7 +3,7 @@ package tkom;
 import tkom.ast.*;
 import tkom.ast.expression.*;
 import tkom.ast.statement.*;
-import tkom.exception.*;
+import tkom.exception.ParseException.*;
 
 import java.util.*;
 

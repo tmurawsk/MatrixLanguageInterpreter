@@ -35,7 +35,15 @@ public class Variable {
         initializeValuesMatrix();
     }
 
-    public Variable(int height, int width) {
+    public TokenID getType() {
+        return type;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void initSize(int height, int width) {
         valueExpressions = new ArrayList<>();
         values = new ArrayList<>();
 
@@ -51,10 +59,6 @@ public class Variable {
         }
 
         type = (height == width && height == 1) ? TokenID.Num : TokenID.Mat;
-    }
-
-    public TokenID getType() {
-        return type;
     }
 
     private void initializeValuesMatrix() {
@@ -74,11 +78,15 @@ public class Variable {
         }
     }
 
-    int get(int i, int j) {
+    public int get(int i, int j) {
         if (values == null || i > values.size() || j > values.get(0).size())
             return 0; //TODO throw exception?
 
         return values.get(i - 1).get(j - 1);
+    }
+
+    public int getInt() {
+        return get(1,1);
     }
 
     public Variable add(Variable v) {

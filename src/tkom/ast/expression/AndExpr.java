@@ -5,7 +5,7 @@ import tkom.Position;
 import java.util.LinkedList;
 
 public class AndExpr extends LogicExpression {
-    public LinkedList<RelationExpr> relationExprs;
+    private LinkedList<RelationExpr> relationExprs;
 
     public AndExpr(Position position, RelationExpr expr) {
         super(position);

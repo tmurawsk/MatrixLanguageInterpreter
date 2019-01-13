@@ -1,3 +1,35 @@
+num globalNum = -10;
+
+func main () num {
+    num n = 5;
+    mat matrix = foo(n, 2, 3);
+    mat matrixLiteral = 5 * ([  1, 2,  3; 4, 6,  5 * 3 - 1] +
+                             [ -2, n, 33; 1, 0, -globalNum]);
+
+    mat matrixSum = sum(matrixLiteral, matrix);
+
+    print ("My num: ", n, " and global num: ", globalNum);
+    print ("My function matrix: ", matrix);
+    print ("My own matrix: ", matrixLiteral);
+
+    if(n + 3 > 0 && (globalNum == n || globalNum != matrix[1][2])) {
+        print("Conditions are met, here is matrix sum: ", matrixSum);
+    }
+    else {
+        print("Conditions are not met, here is negative matrix sum : ", -matrixSum);
+    }
+
+    return 0;
+}
+
+func sum(num a, num b) num {
+    return a + b;
+}
+
+func sum(mat ma, mat mb) mat {
+    return ma + mb;
+}
+
 func foo (num a, num height, num width) mat {
     if (a < 0) {
         a = -a;
@@ -16,35 +48,4 @@ func foo (num a, num height, num width) mat {
     }
 
     return result;
-}
-
-num globalNum = -10;
-
-func sum(num a, num b) num {
-    return a + b;
-}
-
-func sum(mat ma, mat mb) mat {
-    return ma + mb;
-}
-
-func main () num {
-    num n = 5;
-    mat matrix = foo(n, 2, 3);
-    mat matrixLiteral = 5 * ([  1, 2,  3; 4, 6,  5 * 3 - 1] +
-                             [ -2, n, 33; 1, 0, -globalNum]);
-    mat matrixSum = sum(matrixLiteral, matrix);
-
-    print ("My num: ", n, " and global num: ", globalNum);
-    print ("My function matrix: ", matrix);
-    print ("My own matrix: ", matrixLiteral);
-
-    if(n + 3 > 0 && (globalNum == n || globalNum != matrix[1][2])) {
-        print("Conditions are met, here is matrix sum: ", matrixSum);
-    }
-    else {
-        print("Conditions are not met, here is negative matrix sum : ", -matrixSum);
-    }
-
-    return 0;
 }

@@ -14,8 +14,8 @@ public class FunctionCall extends Statement {
 
     private LinkedList<MathExpr> parameters;
 
-    public FunctionCall(Statement parent, Position position, String name) {
-        super(parent, position);
+    public FunctionCall(Position position, String name) {
+        super(position);
         this.name = name;
         parameters = new LinkedList<>();
     }

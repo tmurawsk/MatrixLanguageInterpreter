@@ -8,8 +8,8 @@ import java.util.LinkedList;
 public class PrintStatement extends Statement {
     private LinkedList<Printable> toPrint;
 
-    public PrintStatement(Statement parent, Position position) {
-        super(parent, position);
+    public PrintStatement(Position position) {
+        super(position);
         toPrint = new LinkedList<>();
     }
 

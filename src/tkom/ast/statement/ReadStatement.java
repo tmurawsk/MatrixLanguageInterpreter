@@ -6,8 +6,8 @@ import tkom.ast.VariableCall;
 public class ReadStatement extends Statement {
     private VariableCall variableCall;
 
-    public ReadStatement(Statement parent, Position position, VariableCall variableCall) {
-        super(parent, position);
+    public ReadStatement(Position position, VariableCall variableCall) {
+        super(position);
         this.variableCall = variableCall;
     }
 

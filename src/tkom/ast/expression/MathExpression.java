@@ -4,7 +4,6 @@ import tkom.Position;
 import tkom.TokenID;
 import tkom.ast.Variable;
 import tkom.ast.statement.Statement;
-import tkom.exception.TypeMismatchException;
 
 public abstract class MathExpression {
     private Statement parentStatement;
@@ -13,8 +12,7 @@ public abstract class MathExpression {
 
     private Position position;
 
-    MathExpression(Statement parentStatement, Position position) {
-        this.parentStatement = parentStatement;
+    MathExpression(Position position) {
         this.position = position;
         type = TokenID.Any;
     }

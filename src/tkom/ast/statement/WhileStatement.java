@@ -10,8 +10,8 @@ public class WhileStatement extends Statement {
 
     private LinkedList<Statement> statements;
 
-    public WhileStatement(Statement parent, Position position, LogicExpr condition) {
-        super(parent, position);
+    public WhileStatement(Position position, LogicExpr condition) {
+        super(position);
         this.condition = condition;
         statements = new LinkedList<>();
     }

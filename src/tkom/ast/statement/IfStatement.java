@@ -12,8 +12,8 @@ public class IfStatement extends Statement {
 
     private IfStatement elseStatement;
 
-    public IfStatement(Statement parent, Position position, LogicExpr condition) {
-        super(parent, position);
+    public IfStatement(Position position, LogicExpr condition) {
+        super(position);
         this.condition = condition;
         statements = new LinkedList<>();
     }

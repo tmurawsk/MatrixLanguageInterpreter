@@ -5,7 +5,6 @@ import tkom.TokenID;
 import tkom.ast.FunctionCall;
 import tkom.ast.Variable;
 import tkom.ast.VariableCall;
-import tkom.ast.statement.Statement;
 
 public class BaseMathExpr extends MathExpression {
     private boolean isMinus;
@@ -13,24 +12,24 @@ public class BaseMathExpr extends MathExpression {
     private VariableCall variableCall;
     private FunctionCall functionCall;
 
-    private BaseMathExpr(Statement parent, Position position, boolean isMinus) {
-        super(parent, position);
+    private BaseMathExpr(Position position, boolean isMinus) {
+        super(position);
         this.isMinus = isMinus;
         this.type = TokenID.Any;
     }
 
-    public BaseMathExpr(Statement parent, Position position, boolean isMinus, MathExpression expression) {
-        this(parent, position, isMinus);
+    public BaseMathExpr(Position position, boolean isMinus, MathExpression expression) {
+        this(position, isMinus);
         this.expression = expression;
     }
 
-    public BaseMathExpr(Statement parent, Position position, boolean isMinus, VariableCall variableCall) {
-        this(parent, position, isMinus);
+    public BaseMathExpr(Position position, boolean isMinus, VariableCall variableCall) {
+        this(position, isMinus);
         this.variableCall = variableCall;
     }
 
-    public BaseMathExpr(Statement parent, Position position, boolean isMinus, FunctionCall functionCall) {
-        this(parent, position, isMinus);
+    public BaseMathExpr(Position position, boolean isMinus, FunctionCall functionCall) {
+        this(position, isMinus);
         this.functionCall = functionCall;
     }
 

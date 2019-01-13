@@ -5,7 +5,9 @@ import tkom.TokenID;
 import tkom.ast.expression.MathExpr;
 
 public class VariableCall {
-    private Variable variable;
+    private String variableReference;
+
+    private Variable anonymousVariable;
 
     private MathExpr column;
 
@@ -13,15 +15,29 @@ public class VariableCall {
 
     private Position position;
 
-    public VariableCall(Variable variable, Position position) {
-        this.variable = variable;
+    private VariableCall(Position position) {
         this.position = position;
-        column = null;
-        row = null;
+    }
+
+    public VariableCall(String variableReference, Position position) {
+        this(position);
+        this.variableReference = variableReference;
+    }
+
+    public VariableCall(Variable anonymousVariable, Position position) {
+        this(position);
+        this.anonymousVariable = anonymousVariable;
     }
 
     public TokenID getType() {
-        return (column == null || row == null) ? variable.getType() : TokenID.Num;
+        if (column != null && row != null)
+            return TokenID.Num;
+
+        if (anonymousVariable != null)
+            return anonymousVariable.getType();
+
+        Variable variable = Program.getVariable(variableReference);
+        return variable != null ? variable.getType() : TokenID.Invalid;
     }
 
     public void setColumn(MathExpr column) {

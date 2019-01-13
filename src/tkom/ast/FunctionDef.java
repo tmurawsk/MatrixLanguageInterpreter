@@ -6,6 +6,7 @@ import tkom.ast.statement.Statement;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Stack;
 
 public class FunctionDef extends Statement {
     public String name;
@@ -16,11 +17,13 @@ public class FunctionDef extends Statement {
 
     private LinkedList<Statement> statements;
 
+    private Stack<HashMap<String, Variable>> localVariables;
+
     private Variable result;
 
     private FunctionDef(Position position) {
-        super(null, position);
-        localVariables = new HashMap<>();
+        super(position);
+        localVariables = new Stack<>();
     }
 
     public FunctionDef(Position position, String name, TokenID returnType, LinkedList<Variable> arguments) {
@@ -28,8 +31,6 @@ public class FunctionDef extends Statement {
         this.name = name;
         this.returnType = returnType;
         this.arguments = arguments;
-        for (Variable v : arguments)
-            localVariables.put(v.name, v);
     }
 
     public LinkedList<Variable> getArguments() {
@@ -40,12 +41,25 @@ public class FunctionDef extends Statement {
         this.statements = statements;
     }
 
+    Variable getVariable(String name) {
+        for (HashMap<String, Variable> variables : localVariables) {
+            Variable v = variables.get(name);
+            if (v != null)
+                return v;
+        }
+        return null;
+    }
+
     public Variable evaluate(LinkedList<Variable> parameters) {
         return null; //TODO
     }
 
     @Override
     public void execute() {
+        //TODO trzeba tu robić new FunctionDef(); wtedy będzie się ją dodawać do stosu wywołań FunctionDef w Programie
+        // wtedy jak chcemy się odwołać do Variable to bierzemy z wierzchu stosu FunctionDef i getVariable(name)
+        // wtedy jak kończymy evaluate na FunctionDef to robimy na stosie pop()
+
         //TODO saves result to "result" variable
     }
 }

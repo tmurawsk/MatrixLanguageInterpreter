@@ -3,8 +3,6 @@ package tkom.ast.expression;
 import tkom.Position;
 import tkom.TokenID;
 import tkom.ast.Variable;
-import tkom.ast.statement.Statement;
-import tkom.exception.TypeMismatchException;
 
 import java.util.LinkedList;
 
@@ -13,8 +11,8 @@ public class MathExpr extends MathExpression {
 
     private LinkedList<TokenID> addOps;
 
-    public MathExpr(Statement parent, Position position, MultExpr expression) {
-        super(parent, position);
+    public MathExpr(Position position, MultExpr expression) {
+        super(position);
         addOps = new LinkedList<>();
         multExprs = new LinkedList<>();
         multExprs.add(expression);

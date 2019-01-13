@@ -13,8 +13,8 @@ public class InitStatement extends Statement {
 
     private MathExpr rightExpr;
 
-    public InitStatement(Statement parent, Position position, TokenID type, String name) {
-        super(parent, position);
+    public InitStatement(Position position, TokenID type, String name) {
+        super(position);
         this.type = type;
         this.name = name;
     }
@@ -22,6 +22,10 @@ public class InitStatement extends Statement {
     public void setExpressions(MathExpr leftExpr, MathExpr rightExpr) {
         this.leftExpr = leftExpr;
         this.rightExpr = rightExpr;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override

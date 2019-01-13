@@ -9,8 +9,8 @@ public class AssignStatement extends Statement {
 
     private MathExpr expression;
 
-    public AssignStatement(Statement parent, Position position, VariableCall variableCall, MathExpr expression) {
-        super(parent, position);
+    public AssignStatement(Position position, VariableCall variableCall, MathExpr expression) {
+        super(position);
         this.variableCall = variableCall;
         this.expression = expression;
     }

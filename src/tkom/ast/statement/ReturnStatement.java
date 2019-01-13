@@ -6,8 +6,8 @@ import tkom.ast.expression.MathExpr;
 public class ReturnStatement extends Statement {
     private MathExpr expression;
 
-    public ReturnStatement(Statement parent, Position position, MathExpr expression) {
-        super(parent, position);
+    public ReturnStatement(Position position, MathExpr expression) {
+        super(position);
         this.expression = expression;
     }
 

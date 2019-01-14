@@ -4,6 +4,8 @@ import tkom.Position;
 import tkom.TokenID;
 import tkom.ast.expression.MathExpr;
 import tkom.ast.statement.Statement;
+import tkom.exception.ExecutionException.ExecutionException;
+import tkom.exception.ExecutionException.NotDefinedException;
 
 import java.util.LinkedList;
 
@@ -20,16 +22,12 @@ public class FunctionCall extends Statement {
         parameters = new LinkedList<>();
     }
 
-    LinkedList<MathExpr> getParameters() {
+    public LinkedList<MathExpr> getParameters() {
         return parameters;
     }
 
     public void addArgument(MathExpr expr) {
         parameters.add(expr);
-    }
-
-    public void setFunctionDef(FunctionDef functionDef) {
-        this.functionDef = functionDef;
     }
 
     public TokenID getType() {
@@ -38,12 +36,28 @@ public class FunctionCall extends Statement {
         return functionDef.returnType;
     }
 
-    public Variable evaluate() {
-        return null; //TODO
+    public Variable evaluate() throws ExecutionException {
+        findFunctionDef();
+        return functionDef.evaluate(evaluateParameters());
     }
 
     @Override
-    public void execute() {
-        //TODO
+    public void execute() throws ExecutionException {
+        findFunctionDef();
+        functionDef.execute(evaluateParameters());
+    }
+
+    private LinkedList<Variable> evaluateParameters() {
+        LinkedList<Variable> parametersValues = new LinkedList<>();
+        for (MathExpr expr : parameters)
+            parametersValues.add(expr.evaluate());
+        return parametersValues;
+    }
+
+    private void findFunctionDef() throws NotDefinedException {
+        FunctionDef functionDef = Program.getFunctionDef(this, true);
+        if (functionDef == null)
+            throw new NotDefinedException(position, this);
+        this.functionDef = functionDef;
     }
 }

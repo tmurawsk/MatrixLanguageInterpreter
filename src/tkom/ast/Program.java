@@ -2,7 +2,6 @@ package tkom.ast;
 
 import tkom.Position;
 import tkom.ast.statement.InitStatement;
-import tkom.ast.statement.Statement;
 import tkom.exception.ExecutionException.ExecutionException;
 import tkom.exception.ExecutionException.MissingMainException;
 
@@ -34,6 +33,14 @@ public class Program {
         initStatements.add(initStatement);
     }
 
+    public static void pushFunctionCall(FunctionDef functionDef) {
+        functionCallStack.push(functionDef);
+    }
+
+    public static FunctionDef popFunctionCall() {
+        return functionCallStack.pop();
+    }
+
     public static void addVariable(Variable variable) {
         if (functionCallStack.empty())
             globalVariables.put(variable.name, variable);
@@ -50,17 +57,19 @@ public class Program {
         return globalVariables.get(name);
     }
 
-    public static FunctionDef getFunctionDef(FunctionCall functionCall) {
+    public static FunctionDef getFunctionDef(FunctionCall functionCall, boolean checkTypes) {
         for (FunctionDef def : functionDefinitions) {
             if (!def.name.equals(functionCall.name) || def.getArguments().size() != functionCall.getParameters().size())
                 continue;
             boolean matched = true;
-//            for (int i = 0; i < def.getArguments().size(); i++) {
-//                if (def.getArguments().get(i).getType() != functionCall.getParameters().get(i).getType()) {
-//                    matched = false;
-//                    break;
-//                }
-//            }
+            if (checkTypes) {
+                for (int i = 0; i < def.getArguments().size(); i++) {
+                    if (def.getArguments().get(i).getKey() != functionCall.getParameters().get(i).getType()) {
+                        matched = false;
+                        break;
+                    }
+                }
+            }
             if (matched)
                 return def;
         }
@@ -72,7 +81,7 @@ public class Program {
             if (def.name.equals(functionDef.name) && def.getArguments().size() == functionDef.getArguments().size()) {
                 boolean matched = true;
                 for (int i = 0; i < def.getArguments().size(); i++) {
-                    if (def.getArguments().get(i).getType() != functionDef.getArguments().get(i).getType()) {
+                    if (def.getArguments().get(i).getKey() != functionDef.getArguments().get(i).getKey()) {
                         matched = false;
                         break;
                     }

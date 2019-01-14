@@ -1,5 +1,6 @@
 package tkom;
 
+import javafx.util.Pair;
 import tkom.ast.*;
 import tkom.ast.expression.*;
 import tkom.ast.statement.*;
@@ -43,11 +44,9 @@ class Parser {
 
     private void validateFunctionCalls() throws NotDefinedException {
         for (FunctionCall functionCall : functionCallsToValidate) {
-            FunctionDef functionDef = Program.getFunctionDef(functionCall);
+            FunctionDef functionDef = Program.getFunctionDef(functionCall, false);
             if (functionDef == null)
                 throw new NotDefinedException(functionCall.getPosition(), functionCall);
-
-            functionCall.setFunctionDef(functionDef);
         }
     }
 
@@ -70,10 +69,10 @@ class Parser {
         localVariablesStack.getLast().add(name);
     }
 
-    private void addVariables(Collection<Variable> arguments) {
+    private void addVariables(Collection<String> arguments) {
         if (arguments != null)
-            for (Variable v : arguments)
-                addVariable(v.name);
+            for (String name : arguments)
+                addVariable(name);
     }
 
     private boolean variableExists(String name) {
@@ -88,7 +87,7 @@ class Parser {
         Token firstToken = accept(TokenID.Func);
         Token name = accept(TokenID.Name);
         accept(TokenID.RoundBracketOpen);
-        LinkedList<Variable> arguments = parseArguments();
+        LinkedList<Pair<TokenID, String>> arguments = parseArguments();
         accept(TokenID.RoundBracketClose);
         Token type = parseType();
 
@@ -97,7 +96,7 @@ class Parser {
             throw new DuplicateException(functionDef.getPosition(), functionDef);
 
         accept(TokenID.CurlyBracketOpen);
-        LinkedList<Statement> statementBlock = parseStatementBlock(arguments);
+        LinkedList<Statement> statementBlock = parseStatementBlock(getValuesFromPairs(arguments));
         Token endOfFunctionDef = accept(TokenID.CurlyBracketClose);
 
         if (!containsReturnStatement(statementBlock))
@@ -105,6 +104,13 @@ class Parser {
 
         functionDef.setStatements(statementBlock);
         return functionDef;
+    }
+
+    private Collection<String> getValuesFromPairs(Collection<Pair<TokenID, String>> pairs) {
+        LinkedList<String> values = new LinkedList<>();
+        for (Pair<TokenID, String> pair : pairs)
+            values.add(pair.getValue());
+        return values;
     }
 
     private void validateType(Token type) throws ParseException {
@@ -126,21 +132,21 @@ class Parser {
         return false;
     }
 
-    private LinkedList<Variable> parseArguments() throws ParseException {
-        LinkedList<Variable> arguments = new LinkedList<>();
+    private LinkedList<Pair<TokenID, String>> parseArguments() throws ParseException {
+        LinkedList<Pair<TokenID, String>> arguments = new LinkedList<>();
 
         if (lexer.peekToken().getId() == TokenID.RoundBracketClose)
             return arguments;
 
         Token type = parseType();
         Token name = accept(TokenID.Name);
-        arguments.add(new Variable(type.getId(), name.getValue()));
+        arguments.add(new Pair<>(type.getId(), name.getValue()));
 
         while (lexer.peekToken().getId() == TokenID.Comma) {
             accept(TokenID.Comma);
             type = parseType();
             name = accept(TokenID.Name);
-            arguments.add(new Variable(type.getId(), name.getValue()));
+            arguments.add(new Pair<>(type.getId(), name.getValue()));
         }
 
         return arguments;
@@ -150,9 +156,9 @@ class Parser {
         return parseStatementBlock(null);
     }
 
-    private LinkedList<Statement> parseStatementBlock(Collection<Variable> initialVariables) throws ParseException {
+    private LinkedList<Statement> parseStatementBlock(Collection<String> initialVariableNames) throws ParseException {
         pushStackLevel();
-        addVariables(initialVariables);
+        addVariables(initialVariableNames);
         LinkedList<Statement> statements = new LinkedList<>();
 
         boolean isStatementMatched = true;

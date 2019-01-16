@@ -3,6 +3,7 @@ package tkom.ast.statement;
 import tkom.Position;
 import tkom.ast.VariableCall;
 import tkom.ast.expression.MathExpr;
+import tkom.exception.ExecutionException.TypeMismatchException;
 
 public class AssignStatement extends Statement {
     private VariableCall variableCall;
@@ -16,7 +17,7 @@ public class AssignStatement extends Statement {
     }
 
     @Override
-    public void execute() {
-        //TODO
+    public void execute() throws TypeMismatchException {
+        variableCall.setValue(expression.evaluate());
     }
 }

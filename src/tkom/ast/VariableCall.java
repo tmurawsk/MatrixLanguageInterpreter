@@ -3,6 +3,7 @@ package tkom.ast;
 import tkom.Position;
 import tkom.TokenID;
 import tkom.ast.expression.MathExpr;
+import tkom.exception.ExecutionException.TypeMismatchException;
 
 public class VariableCall {
     private String variableReference;
@@ -50,5 +51,25 @@ public class VariableCall {
 
     public Position getPosition() {
         return position;
+    }
+
+    public void setValue(Variable newVariable) throws TypeMismatchException {
+        TokenID type = getType();
+        if (type != newVariable.getType())
+            throw new TypeMismatchException(position, type, newVariable.getType());
+        Variable refVariable = Program.getVariable(variableReference);
+
+        if (row != null && column != null) {
+            Variable rowVar = row.evaluate();
+            Variable colVar = column.evaluate();
+            if (rowVar.getType() != TokenID.Num)
+                throw new TypeMismatchException(position, TokenID.Num, rowVar.getType());
+            if (colVar.getType() != TokenID.Num)
+                throw new TypeMismatchException(position, TokenID.Num, colVar.getType());
+            refVariable.setValue(rowVar.getInt(), colVar.getInt(), newVariable.getInt());
+        }
+        else {
+            refVariable.setValue(newVariable.getValue());
+        }
     }
 }

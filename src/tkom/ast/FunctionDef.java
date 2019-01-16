@@ -72,9 +72,16 @@ public class FunctionDef extends Statement {
         return result;
     }
 
-    // to się przyda - będzie wołane z poziomu funkcji execute() w ReturnStatement
     public void setResult(Variable result) {
         this.result = result;
+    }
+
+    void pushStackLevel() {
+        localVariables.push(new HashMap<>());
+    }
+
+    void popStackLevel() {
+        localVariables.pop();
     }
 
     public Variable evaluate(LinkedList<Variable> parameters) throws ExecutionException {

@@ -1,6 +1,7 @@
 package tkom.ast;
 
 import tkom.TokenID;
+import tkom.exception.ExecutionException.IndexOutOfBoundsException;
 
 import java.util.ArrayList;
 
@@ -40,11 +41,22 @@ public class Variable {
     }
 
     public ArrayList<ArrayList<Integer>> getValue() {
+        evaluate();
         return value;
     }
 
     public void setValue(ArrayList<ArrayList<Integer>> value) {
         this.value = value;
+    }
+
+    public void setValue(int i, int j, int newValue) {
+        value.get(i).set(j, newValue);
+    }
+
+    public void setValue(int newValue) {
+        value = new ArrayList<>();
+        value.set(0, new ArrayList<>());
+        value.get(0).set(0, newValue);
     }
 
     public void setName(String name) {
@@ -95,6 +107,14 @@ public class Variable {
 
     public int getInt() {
         return get(1,1);
+    }
+
+    public int getHeight() {
+        return value.size();
+    }
+
+    public int getWidth() {
+        return value.get(0).size();
     }
 
     public Variable evaluate() {

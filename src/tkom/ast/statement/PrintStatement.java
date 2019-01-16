@@ -23,7 +23,11 @@ public class PrintStatement extends Statement {
 
     @Override
     public void execute() {
-        //TODO
+        StringBuilder sb = new StringBuilder();
+        for (Printable p : toPrint) {
+            sb.append(p.toString());
+        }
+        System.out.println(sb.toString());
     }
 
     private class Printable {
@@ -37,6 +41,13 @@ public class PrintStatement extends Statement {
 
         Printable(MathExpr mathExpr) {
             this.mathExpr = mathExpr;
+        }
+
+        public String toString(){
+            if (mathExpr != null)
+                return mathExpr.evaluate().toString();
+            else
+                return string;
         }
     }
 }

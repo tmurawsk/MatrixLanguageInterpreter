@@ -1,7 +1,9 @@
 package tkom.ast.statement;
 
 import tkom.Position;
+import tkom.ast.Program;
 import tkom.ast.expression.LogicExpr;
+import tkom.exception.ExecutionException.ExecutionException;
 
 import java.util.LinkedList;
 
@@ -21,7 +23,14 @@ public class WhileStatement extends Statement {
     }
 
     @Override
-    public void execute() {
-        //TODO
+    public void execute() throws ExecutionException {
+        while (!condition.evaluate()) {
+            Program.pushStackLevel();
+
+            for (Statement stmnt : statements)
+                stmnt.execute();
+
+            Program.popStackLevel();
+        }
     }
 }

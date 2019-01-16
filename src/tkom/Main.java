@@ -1,7 +1,11 @@
 package tkom;
 
+import tkom.ast.FunctionDef;
+import tkom.ast.Program;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.LinkedList;
 
 public class Main {
 
@@ -32,6 +36,8 @@ public class Main {
             Parser parser = new Parser(lexer);
 
             parser.parseProgram();
+
+            LinkedList<FunctionDef> functions = Program.functionDefinitions;
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -5,6 +5,7 @@ import tkom.Position;
 import tkom.TokenID;
 import tkom.ast.statement.Statement;
 import tkom.exception.ExecutionException.ExecutionException;
+import tkom.exception.ExecutionException.ReturnValue;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -108,8 +109,11 @@ public class FunctionDef extends Statement {
             }
         }
 
-        for (Statement stmnt : statements)
-            stmnt.execute();
+        try {
+            for (Statement stmnt : statements)
+                stmnt.execute();
+        }
+        catch (ReturnValue ignored) {}
 
         Program.popFunctionCall();
     }

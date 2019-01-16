@@ -125,18 +125,6 @@ public class Variable {
         return this;
     }
 
-    public Variable add(Variable v) {
-        return null; //TODO
-    }
-
-    public Variable multiply(Variable v) {
-        return null; //TODO
-    }
-
-    public Variable divide(Variable v) {
-        return null; //TODO
-    }
-
     public String toString() {
         StringBuilder sb = new StringBuilder();
         int maxInt = -1000000;
@@ -155,5 +143,29 @@ public class Variable {
         }
 
         return sb.toString();
+    }
+
+    public Variable add(Variable v) {
+        return null; //TODO
+    }
+
+    public Variable multiply(Variable v) {
+        return null; //TODO
+    }
+
+    public Variable divide(Variable v) {
+        return null; //TODO
+    }
+
+    public boolean equals(Variable v) {
+        return false; //TODO
+    }
+
+    public boolean greaterThan(Variable v) {
+        return false; //TODO
+    }
+
+    public boolean lowerThan(Variable v) {
+        return false; //TODO
     }
 }

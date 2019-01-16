@@ -12,7 +12,7 @@ import java.util.Stack;
 public class Program {
     private static LinkedList<InitStatement> initStatements;
 
-    public static LinkedList<FunctionDef> functionDefinitions;
+    private static LinkedList<FunctionDef> functionDefinitions;
 
     private static HashMap<String, Variable> globalVariables;
 
@@ -47,6 +47,10 @@ public class Program {
 
     public static void popStackLevel() {
         functionCallStack.peek().popStackLevel();
+    }
+
+    public static FunctionDef getLastFunctionCall() {
+        return functionCallStack.peek();
     }
 
     public static void addVariable(Variable variable) {

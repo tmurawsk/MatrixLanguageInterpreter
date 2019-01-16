@@ -37,7 +37,7 @@ public class Main {
 
             parser.parseProgram();
 
-            LinkedList<FunctionDef> functions = Program.functionDefinitions;
+//            LinkedList<FunctionDef> functions = Program.functionDefinitions;
 
         } catch (Exception e) {
             e.printStackTrace();

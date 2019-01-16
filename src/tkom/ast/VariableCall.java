@@ -3,6 +3,8 @@ package tkom.ast;
 import tkom.Position;
 import tkom.TokenID;
 import tkom.ast.expression.MathExpr;
+import tkom.exception.ExecutionException.ExecutionException;
+import tkom.exception.ExecutionException.IndexOutOfBoundsException;
 import tkom.exception.ExecutionException.TypeMismatchException;
 
 public class VariableCall {
@@ -53,7 +55,7 @@ public class VariableCall {
         return position;
     }
 
-    public void setValue(Variable newVariable) throws TypeMismatchException {
+    public void setValue(Variable newVariable) throws ExecutionException {
         TokenID type = getType();
         if (type != newVariable.getType())
             throw new TypeMismatchException(position, type, newVariable.getType());
@@ -66,6 +68,10 @@ public class VariableCall {
                 throw new TypeMismatchException(position, TokenID.Num, rowVar.getType());
             if (colVar.getType() != TokenID.Num)
                 throw new TypeMismatchException(position, TokenID.Num, colVar.getType());
+            if (rowVar.getInt() < 1 || rowVar.getInt() > refVariable.getHeight())
+                throw new IndexOutOfBoundsException(position, rowVar.getInt());
+            if (colVar.getInt() < 1 || colVar.getInt() > refVariable.getWidth())
+                throw new IndexOutOfBoundsException(position, colVar.getInt());
             refVariable.setValue(rowVar.getInt(), colVar.getInt(), newVariable.getInt());
         }
         else {

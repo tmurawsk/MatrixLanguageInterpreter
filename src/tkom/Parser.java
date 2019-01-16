@@ -414,10 +414,10 @@ class Parser {
             nextToken = lexer.peekToken();
         }
 
-        if (nextToken.getId() == TokenID.RoundBracketOpen)
-            return new BaseLogicExpr(nextToken.getPosition(), isNegation, parseBracketLogicExpr());
-        else
+        if (nextToken.getId() != TokenID.RoundBracketOpen && !isNegation)
             return new BaseLogicExpr(nextToken.getPosition(), isNegation, parseMathExpr());
+        else
+            return new BaseLogicExpr(nextToken.getPosition(), isNegation, parseBracketLogicExpr());
     }
 
     private LogicExpr parseBracketLogicExpr() throws ParseException {

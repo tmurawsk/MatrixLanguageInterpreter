@@ -1,7 +1,11 @@
 package tkom.ast;
 
+import javafx.util.Pair;
+import tkom.Position;
 import tkom.TokenID;
-import tkom.exception.ExecutionException.IndexOutOfBoundsException;
+import tkom.exception.ExecutionException.ExecutionException;
+import tkom.exception.ExecutionException.MathException;
+import tkom.exception.ExecutionException.TypeMismatchException;
 
 import java.util.ArrayList;
 
@@ -14,12 +18,21 @@ public class Variable {
 
     private ArrayList<ArrayList<Integer>> value;
 
+    private boolean isEvaluated;
+
+    private Variable() {
+        this.isEvaluated = false;
+    }
+
     public Variable(TokenID type, String name) {
+        this();
         this.type = type;
         this.name = name;
+        this.isEvaluated = false;
     }
 
     public Variable(Value value) {
+        this();
         ArrayList<ArrayList<Value>> matrix = new ArrayList<>();
         ArrayList<Value> column = new ArrayList<>();
         column.add(value);
@@ -31,29 +44,35 @@ public class Variable {
     }
 
     public Variable(ArrayList<ArrayList<Value>> valueExpressions) {
+        this();
         this.type = (valueExpressions.size() > 1 || valueExpressions.get(0).size() > 1) ? TokenID.Mat : TokenID.Num;
         this.valueExpressions = valueExpressions;
         initializeValuesMatrix();
+    }
+
+    public Variable(ArrayList<ArrayList<Integer>> value, boolean isEvaluated) {
+        this();
+        this.isEvaluated = isEvaluated;
+        this.value = value;
+        this.type = (value.size() > 1 || value.get(0).size() > 1) ? TokenID.Mat : TokenID.Num;
     }
 
     public TokenID getType() {
         return type;
     }
 
-    public ArrayList<ArrayList<Integer>> getValue() {
-        evaluate();
-        return value;
-    }
-
     public void setValue(ArrayList<ArrayList<Integer>> value) {
+        isEvaluated = true;
         this.value = value;
     }
 
     public void setValue(int i, int j, int newValue) {
+        isEvaluated = true;
         value.get(i).set(j, newValue);
     }
 
     public void setValue(int newValue) {
+        isEvaluated = true;
         value = new ArrayList<>();
         value.set(0, new ArrayList<>());
         value.get(0).set(0, newValue);
@@ -106,23 +125,19 @@ public class Variable {
     }
 
     public int getInt() {
-        return get(1,1);
+        return get(1, 1);
     }
 
     public int getHeight() {
-        return value.size();
+        return isEvaluated ? value.size() : valueExpressions.size();
     }
 
     public int getWidth() {
-        return value.get(0).size();
+        return isEvaluated ? value.get(0).size() : valueExpressions.get(0).size();
     }
 
-    public Variable evaluate() {
-        for (int i = 0; i < valueExpressions.size(); i++)
-            for (int j = 0;j < valueExpressions.get(i).size(); j++)
-                value.get(i).set(j, valueExpressions.get(i).get(j).evaluate());
-
-        return this;
+    public Pair<Integer, Integer> getSize() {
+        return new Pair<>(getHeight(), getWidth());
     }
 
     public String toString() {
@@ -145,8 +160,52 @@ public class Variable {
         return sb.toString();
     }
 
-    public Variable add(Variable v) {
-        return null; //TODO
+    public ArrayList<ArrayList<Integer>> evaluate() throws ExecutionException {
+        if (isEvaluated)
+            return value;
+
+        for (int i = 0; i < valueExpressions.size(); i++) {
+            for (int j = 0; j < valueExpressions.get(i).size(); j++) {
+                Value v = valueExpressions.get(i).get(j);
+                TokenID type = v.getType();
+                if (type != TokenID.Num)
+                    throw new TypeMismatchException(new Position(), TokenID.Num, type);
+                value.get(i).set(j, v.evaluate());
+            }
+        }
+
+        return value;
+    }
+
+    public Variable add(Variable v) throws ExecutionException {
+        return addOrSub(v, false);
+    }
+
+    public Variable subtract(Variable v) throws ExecutionException {
+        return addOrSub(v, true);
+    }
+
+    private Variable addOrSub(Variable v, boolean isMinus) throws ExecutionException {
+        evaluate();
+        v.evaluate();
+        ArrayList<ArrayList<Integer>> toReturn = new ArrayList<>();
+        int height = getHeight();
+        int width = getWidth();
+
+        if (height != v.getHeight() || width != v.getWidth())
+            throw new MathException(new Position(), getSize(), v.getSize());
+
+        for (int i = 0; i < height; i++) {
+            toReturn.set(i, new ArrayList<>());
+            ArrayList<Integer> row = toReturn.get(i);
+            for (int j = 0; j < width; j++) {
+                if (isMinus)
+                    row.set(j, value.get(i).get(j) - v.evaluate().get(i).get(j));
+                else
+                    row.set(j, value.get(i).get(j) + v.evaluate().get(i).get(j));
+            }
+        }
+        return new Variable(toReturn, true);
     }
 
     public Variable multiply(Variable v) {
@@ -157,15 +216,53 @@ public class Variable {
         return null; //TODO
     }
 
-    public boolean equals(Variable v) {
-        return false; //TODO
+    public boolean equals(Variable v) throws ExecutionException {
+        if (getType() != v.getType())
+            throw new TypeMismatchException(new Position(), getType(), v.getType());
+
+        int height = getHeight();
+        int width = getWidth();
+        if (height != v.getHeight() || width != v.getWidth())
+            return false;
+
+        for (int i = 0; i < height; i++)
+            for (int j = 0; j < width; j++)
+                if (!value.get(i).get(j).equals(v.evaluate().get(i).get(j)))
+                    return false;
+
+        return true;
     }
 
-    public boolean greaterThan(Variable v) {
-        return false; //TODO
+    public boolean notEquals(Variable v) throws ExecutionException {
+        return !equals(v);
     }
 
-    public boolean lowerThan(Variable v) {
-        return false; //TODO
+    public boolean greaterThan(Variable v) throws ExecutionException {
+        evaluateAndCheckTypes(v);
+        return getInt() > v.getInt();
+    }
+
+    public boolean lowerThan(Variable v) throws ExecutionException {
+        evaluateAndCheckTypes(v);
+        return getInt() < v.getInt();
+    }
+
+    public boolean greaterOrEqualThan(Variable v) throws ExecutionException {
+        return !lowerThan(v);
+    }
+
+    public boolean lowerOrEqualThan(Variable v) throws ExecutionException {
+        return !greaterThan(v);
+    }
+
+    private void evaluateAndCheckTypes(Variable v) throws ExecutionException {
+        evaluate();
+        v.evaluate();
+
+        if (getType() != TokenID.Num)
+            throw new TypeMismatchException(new Position(), TokenID.Num, getType());
+
+        if (v.getType() != TokenID.Num)
+            throw new TypeMismatchException(new Position(), TokenID.Num, v.getType());
     }
 }

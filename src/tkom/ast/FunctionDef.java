@@ -104,7 +104,7 @@ public class FunctionDef extends Statement {
         if (callParameters != null) {
             for (int i = 0; i < callParameters.size(); i++) {
                 Variable param = new Variable(arguments.get(i).getKey(), arguments.get(i).getValue());
-                param.setValue(callParameters.get(i).getValue());
+                param.setValue(callParameters.get(i).evaluate());
                 addVariable(param);
             }
         }

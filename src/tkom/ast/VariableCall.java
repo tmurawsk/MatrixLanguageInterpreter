@@ -75,7 +75,7 @@ public class VariableCall {
             refVariable.setValue(rowVar.getInt(), colVar.getInt(), newVariable.getInt());
         }
         else {
-            refVariable.setValue(newVariable.getValue());
+            refVariable.setValue(newVariable.evaluate());
         }
     }
 }

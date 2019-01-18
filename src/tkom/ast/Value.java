@@ -1,5 +1,6 @@
 package tkom.ast;
 
+import tkom.TokenID;
 import tkom.ast.expression.MathExpr;
 
 public class Value {
@@ -17,5 +18,9 @@ public class Value {
 
     public int evaluate() {
         return expression == null ? number : expression.evaluate().get(0, 0);
+    }
+
+    public TokenID getType() {
+        return expression == null ? TokenID.Num : expression.getType();
     }
 }

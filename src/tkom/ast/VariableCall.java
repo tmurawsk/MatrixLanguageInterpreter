@@ -62,20 +62,44 @@ public class VariableCall {
         Variable refVariable = Program.getVariable(variableReference);
 
         if (row != null && column != null) {
-            Variable rowVar = row.evaluate();
-            Variable colVar = column.evaluate();
-            if (rowVar.getType() != TokenID.Num)
-                throw new TypeMismatchException(position, TokenID.Num, rowVar.getType());
-            if (colVar.getType() != TokenID.Num)
-                throw new TypeMismatchException(position, TokenID.Num, colVar.getType());
+            Variable rowVar = evaluateAndCheckTypeNum(row);
+            Variable colVar = evaluateAndCheckTypeNum(column);
+
             if (rowVar.getInt() < 1 || rowVar.getInt() > refVariable.getHeight())
                 throw new IndexOutOfBoundsException(position, rowVar.getInt());
             if (colVar.getInt() < 1 || colVar.getInt() > refVariable.getWidth())
                 throw new IndexOutOfBoundsException(position, colVar.getInt());
+
             refVariable.set(rowVar.getInt() - 1, colVar.getInt() - 1, newVariable.getInt());
-        }
-        else {
+        } else {
             refVariable.set(newVariable.evaluate());
         }
+    }
+
+    public Variable evaluate() throws ExecutionException {
+        if (anonymousVariable != null)
+            return new Variable(anonymousVariable.evaluateAnyway(), true);
+
+        Variable refVariable = Program.getVariable(variableReference);
+        refVariable.evaluate();
+
+        if (row != null && column != null) {
+            if (refVariable.getType() != TokenID.Mat)
+                throw new TypeMismatchException(position, TokenID.Mat, refVariable.getType());
+
+            Variable rowVar = evaluateAndCheckTypeNum(row);
+            Variable colVar = evaluateAndCheckTypeNum(column);
+
+            return new Variable(refVariable.getThrows(rowVar.getInt(), colVar.getInt()));
+        }
+        else
+            return new Variable(refVariable.evaluate(), true);
+    }
+
+    private Variable evaluateAndCheckTypeNum(MathExpr expr) throws ExecutionException {
+        Variable result = expr.evaluate();
+        if (result.getType() != TokenID.Num)
+            throw new TypeMismatchException(position, TokenID.Num, result.getType());
+        return result;
     }
 }

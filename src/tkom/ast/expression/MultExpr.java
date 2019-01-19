@@ -3,6 +3,9 @@ package tkom.ast.expression;
 import tkom.Position;
 import tkom.TokenID;
 import tkom.ast.Variable;
+import tkom.exception.ExecutionException.ExecutionException;
+import tkom.exception.ExecutionException.MathException;
+import tkom.exception.ExecutionException.TypeMismatchException;
 
 import java.util.LinkedList;
 
@@ -41,7 +44,21 @@ public class MultExpr extends MathExpression {
     }
 
     @Override
-    public Variable evaluate() {
-        return null; //TODO
+    public Variable evaluate() throws ExecutionException {
+        if (multOps.isEmpty())
+            return baseMathExprs.get(0).evaluate();
+
+        Variable result = baseMathExprs.get(0).evaluate();
+        for (int i = 1; i < baseMathExprs.size(); i++) {
+            try {
+                if (multOps.get(i - 1) == TokenID.Multiply)
+                    result = result.multiply(baseMathExprs.get(i).evaluate());
+                else
+                    result = result.divide(baseMathExprs.get(i).evaluate());
+            } catch (ExecutionException e) {
+                throw e.setPosition(baseMathExprs.get(i).getPosition());
+            }
+        }
+        return result;
     }
 }

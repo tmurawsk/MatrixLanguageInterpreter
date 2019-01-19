@@ -29,15 +29,15 @@ public class RelationExpr extends LogicExpression {
             case Equal:
                 return leftExpr.evaluateMath().equals(rightExpr.evaluateMath());
             case Unequal:
-                return !leftExpr.evaluateMath().equals(rightExpr.evaluateMath());
+                return leftExpr.evaluateMath().notEquals(rightExpr.evaluateMath());
             case Greater:
                 return leftExpr.evaluateMath().greaterThan(rightExpr.evaluateMath());
             case Less:
                 return leftExpr.evaluateMath().lowerThan(rightExpr.evaluateMath());
             case GreaterOrEqual:
-                return !leftExpr.evaluateMath().lowerThan(rightExpr.evaluateMath());
+                return leftExpr.evaluateMath().greaterOrEqualThan(rightExpr.evaluateMath());
             case LessOrEqual:
-                return !leftExpr.evaluateMath().greaterThan(rightExpr.evaluateMath());
+                return leftExpr.evaluateMath().lowerOrEqualThan(rightExpr.evaluateMath());
         }
 
         return false;

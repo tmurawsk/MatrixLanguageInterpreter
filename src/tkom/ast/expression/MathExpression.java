@@ -4,6 +4,7 @@ import tkom.Position;
 import tkom.TokenID;
 import tkom.ast.Variable;
 import tkom.ast.statement.Statement;
+import tkom.exception.ExecutionException.ExecutionException;
 
 public abstract class MathExpression {
     private Statement parentStatement;
@@ -17,7 +18,7 @@ public abstract class MathExpression {
         type = TokenID.Any;
     }
 
-    public abstract Variable evaluate();
+    public abstract Variable evaluate() throws ExecutionException;
 
     abstract TokenID evaluateType();
 

@@ -19,4 +19,9 @@ public class MathException extends ExecutionException {
     private static String matrixSizesString(Pair<Integer, Integer> sizes) {
         return sizes.getKey() + "x" + sizes.getValue();
     }
+
+    @Override
+    public ExecutionException setPosition(Position position) {
+        return new MathException(position, getMessage().split("\n", 2)[1]);
+    }
 }

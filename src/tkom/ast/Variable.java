@@ -173,8 +173,16 @@ public class Variable {
         return sb.toString();
     }
 
-    public ArrayList<ArrayList<Integer>> evaluate() throws ExecutionException {
-        if (isEvaluated)
+    public ArrayList<ArrayList<Integer>> evaluateAnyway() throws TypeMismatchException {
+        return evaluate(false);
+    }
+
+    public ArrayList<ArrayList<Integer>> evaluate() throws TypeMismatchException {
+        return evaluate(true);
+    }
+
+    private ArrayList<ArrayList<Integer>> evaluate(boolean checkIfEvaluated) throws TypeMismatchException {
+        if (isEvaluated && checkIfEvaluated)
             return value;
 
         for (int i = 0; i < valueExpressions.size(); i++) {
@@ -190,15 +198,15 @@ public class Variable {
         return value;
     }
 
-    public Variable add(Variable v) throws ExecutionException {
+    public Variable add(Variable v) throws MathException, TypeMismatchException {
         return addOrSub(v, false);
     }
 
-    public Variable subtract(Variable v) throws ExecutionException {
+    public Variable subtract(Variable v) throws MathException, TypeMismatchException {
         return addOrSub(v, true);
     }
 
-    private Variable addOrSub(Variable v, boolean isMinus) throws ExecutionException {
+    private Variable addOrSub(Variable v, boolean isMinus) throws TypeMismatchException, MathException {
         evaluate();
         v.evaluate();
         int height = getHeight();
@@ -220,7 +228,7 @@ public class Variable {
         return result;
     }
 
-    public Variable multiply(Variable v) throws ExecutionException {
+    public Variable multiply(Variable v) throws TypeMismatchException, MathException {
         evaluate();
         v.evaluate();
 
@@ -285,7 +293,7 @@ public class Variable {
         return result;
     }
 
-    public Variable divide(Variable v) throws ExecutionException {
+    public Variable divide(Variable v) throws TypeMismatchException, MathException {
         evaluate();
         v.evaluate();
 
@@ -301,7 +309,7 @@ public class Variable {
         return divideByNum(v.getInt());
     }
 
-    public boolean equals(Variable v) throws ExecutionException {
+    public boolean equals(Variable v) throws TypeMismatchException {
         evaluate();
         v.evaluate();
 
@@ -321,29 +329,29 @@ public class Variable {
         return true;
     }
 
-    public boolean notEquals(Variable v) throws ExecutionException {
+    public boolean notEquals(Variable v) throws TypeMismatchException {
         return !equals(v);
     }
 
-    public boolean greaterThan(Variable v) throws ExecutionException {
+    public boolean greaterThan(Variable v) throws TypeMismatchException {
         evaluateAndCheckTypesNum(v);
         return getInt() > v.getInt();
     }
 
-    public boolean lowerThan(Variable v) throws ExecutionException {
+    public boolean lowerThan(Variable v) throws TypeMismatchException {
         evaluateAndCheckTypesNum(v);
         return getInt() < v.getInt();
     }
 
-    public boolean greaterOrEqualThan(Variable v) throws ExecutionException {
+    public boolean greaterOrEqualThan(Variable v) throws TypeMismatchException {
         return !lowerThan(v);
     }
 
-    public boolean lowerOrEqualThan(Variable v) throws ExecutionException {
+    public boolean lowerOrEqualThan(Variable v) throws TypeMismatchException {
         return !greaterThan(v);
     }
 
-    private void evaluateAndCheckTypesNum(Variable v) throws ExecutionException {
+    private void evaluateAndCheckTypesNum(Variable v) throws TypeMismatchException {
         evaluate();
         v.evaluate();
 

@@ -20,10 +20,11 @@ public class AndExpr extends LogicExpression {
 
     @Override
     public boolean evaluate() throws ExecutionException {
+        boolean result = true;
         for (RelationExpr expr : relationExprs) {
             if (!expr.evaluate())
-                return false;
+                result = false;
         }
-        return true;
+        return result;
     }
 }

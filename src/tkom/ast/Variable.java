@@ -4,6 +4,7 @@ import javafx.util.Pair;
 import tkom.Position;
 import tkom.TokenID;
 import tkom.exception.ExecutionException.ExecutionException;
+import tkom.exception.ExecutionException.IndexOutOfBoundsException;
 import tkom.exception.ExecutionException.MathException;
 import tkom.exception.ExecutionException.TypeMismatchException;
 
@@ -57,21 +58,27 @@ public class Variable {
         this.type = (value.size() > 1 || value.get(0).size() > 1) ? TokenID.Mat : TokenID.Num;
     }
 
+    public Variable(int value) {
+        this();
+        this.type = TokenID.Num;
+        set(value);
+    }
+
     public TokenID getType() {
         return type;
     }
 
-    public void setValue(ArrayList<ArrayList<Integer>> value) {
+    public void set(ArrayList<ArrayList<Integer>> value) {
         isEvaluated = true;
         this.value = value;
     }
 
-    public void setValue(int i, int j, int newValue) {
+    public void set(int i, int j, int newValue) {
         isEvaluated = true;
         value.get(i).set(j, newValue);
     }
 
-    public void setValue(int newValue) {
+    public void set(int newValue) {
         isEvaluated = true;
         value = new ArrayList<>();
         value.set(0, new ArrayList<>());
@@ -117,15 +124,21 @@ public class Variable {
         }
     }
 
-    public int get(int i, int j) {
-        if (value == null || i > value.size() || j > value.get(0).size())
-            return 0; //TODO throw exception?
+    public int getThrows(int i, int j) throws ExecutionException {
+        if (i < 0 || i >= value.size())
+            throw new IndexOutOfBoundsException(new Position(), i);
+        if (j < 0 || j >= value.get(0).size())
+            throw new IndexOutOfBoundsException(new Position(), j);
 
-        return value.get(i - 1).get(j - 1);
+        return value.get(i).get(j);
+    }
+
+    private int get(int i, int j) {
+        return value.get(i).get(j);
     }
 
     public int getInt() {
-        return get(1, 1);
+        return value.get(0).get(0);
     }
 
     public int getHeight() {
@@ -166,11 +179,11 @@ public class Variable {
 
         for (int i = 0; i < valueExpressions.size(); i++) {
             for (int j = 0; j < valueExpressions.get(i).size(); j++) {
-                Value v = valueExpressions.get(i).get(j);
-                TokenID type = v.getType();
+                Value expr = valueExpressions.get(i).get(j);
+                TokenID type = expr.getType();
                 if (type != TokenID.Num)
                     throw new TypeMismatchException(new Position(), TokenID.Num, type);
-                value.get(i).set(j, v.evaluate());
+                set(i, j, expr.evaluate());
             }
         }
 
@@ -188,35 +201,110 @@ public class Variable {
     private Variable addOrSub(Variable v, boolean isMinus) throws ExecutionException {
         evaluate();
         v.evaluate();
-        ArrayList<ArrayList<Integer>> toReturn = new ArrayList<>();
         int height = getHeight();
         int width = getWidth();
+        Variable result = new Variable();
+        result.initSize(height, width);
 
         if (height != v.getHeight() || width != v.getWidth())
             throw new MathException(new Position(), getSize(), v.getSize());
 
         for (int i = 0; i < height; i++) {
-            toReturn.set(i, new ArrayList<>());
-            ArrayList<Integer> row = toReturn.get(i);
             for (int j = 0; j < width; j++) {
                 if (isMinus)
-                    row.set(j, value.get(i).get(j) - v.evaluate().get(i).get(j));
+                    result.set(i, j, get(i, j) - v.get(i, j));
                 else
-                    row.set(j, value.get(i).get(j) + v.evaluate().get(i).get(j));
+                    result.set(i, j, get(i, j) + v.get(i, j));
             }
         }
-        return new Variable(toReturn, true);
+        return result;
     }
 
-    public Variable multiply(Variable v) {
-        return null; //TODO
+    public Variable multiply(Variable v) throws ExecutionException {
+        evaluate();
+        v.evaluate();
+
+        if (getType() == TokenID.Num && v.getType() != TokenID.Num)
+            return v.multiplyByNum(getInt());
+        if (v.getType() == TokenID.Num && getType() != TokenID.Num)
+            return multiplyByNum(v.getInt());
+        if (getType() == TokenID.Num && v.getType() == TokenID.Num)
+            return new Variable(getInt() * v.getInt());
+
+        int height1 = getHeight(), width1 = getWidth();
+        int height2 = v.getHeight(), width2 = v.getWidth();
+
+        if (width1 != height2)
+            throw new MathException(new Position(), getSize(), v.getSize());
+
+        Variable result = new Variable();
+        result.initSize(height1, width2);
+
+        for (int i = 0; i < height1; i++)
+            for (int j = 0; j < width2; j++)
+                result.set(i, j, multiplyRowByColumn(v, i, j));
+
+        return result;
     }
 
-    public Variable divide(Variable v) {
-        return null; //TODO
+    private Variable multiplyByNum(int mul) {
+        return multiplyOrDivideByNum(mul, false);
+    }
+
+    private Variable divideByNum(int div) {
+        return multiplyOrDivideByNum(div, true);
+    }
+
+    private Variable multiplyOrDivideByNum(int num, boolean isDivision) {
+        Variable result = new Variable();
+        int height = getHeight();
+        int width = getWidth();
+        result.initSize(height, width);
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (isDivision)
+                    result.set(i, j, get(i, j) / num);
+                else
+                    result.set(i, j, get(i, j) * num);
+            }
+        }
+
+        return result;
+    }
+
+    private int multiplyRowByColumn(Variable v, int row, int col) {
+        int result = 0;
+        int width = getWidth();
+        int height = v.getHeight();
+
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++)
+                result += get(row, i) * v.get(j, col);
+
+        return result;
+    }
+
+    public Variable divide(Variable v) throws ExecutionException {
+        evaluate();
+        v.evaluate();
+
+        if (v.getType() != TokenID.Num)
+            throw new TypeMismatchException(new Position(), TokenID.Num, v.getType());
+
+        if (v.getInt() == 0)
+            throw new MathException(new Position());
+
+        if (getType() == TokenID.Num)
+            return new Variable(getInt() / v.getInt());
+
+        return divideByNum(v.getInt());
     }
 
     public boolean equals(Variable v) throws ExecutionException {
+        evaluate();
+        v.evaluate();
+
         if (getType() != v.getType())
             throw new TypeMismatchException(new Position(), getType(), v.getType());
 
@@ -227,7 +315,7 @@ public class Variable {
 
         for (int i = 0; i < height; i++)
             for (int j = 0; j < width; j++)
-                if (!value.get(i).get(j).equals(v.evaluate().get(i).get(j)))
+                if (get(i, j) != v.get(i, j))
                     return false;
 
         return true;
@@ -238,12 +326,12 @@ public class Variable {
     }
 
     public boolean greaterThan(Variable v) throws ExecutionException {
-        evaluateAndCheckTypes(v);
+        evaluateAndCheckTypesNum(v);
         return getInt() > v.getInt();
     }
 
     public boolean lowerThan(Variable v) throws ExecutionException {
-        evaluateAndCheckTypes(v);
+        evaluateAndCheckTypesNum(v);
         return getInt() < v.getInt();
     }
 
@@ -255,7 +343,7 @@ public class Variable {
         return !greaterThan(v);
     }
 
-    private void evaluateAndCheckTypes(Variable v) throws ExecutionException {
+    private void evaluateAndCheckTypesNum(Variable v) throws ExecutionException {
         evaluate();
         v.evaluate();
 

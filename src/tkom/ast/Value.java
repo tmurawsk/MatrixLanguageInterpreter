@@ -17,7 +17,7 @@ public class Value {
     }
 
     public int evaluate() {
-        return expression == null ? number : expression.evaluate().get(0, 0);
+        return expression == null ? number : expression.evaluate().getInt();
     }
 
     public TokenID getType() {

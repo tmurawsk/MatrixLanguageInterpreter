@@ -72,10 +72,10 @@ public class VariableCall {
                 throw new IndexOutOfBoundsException(position, rowVar.getInt());
             if (colVar.getInt() < 1 || colVar.getInt() > refVariable.getWidth())
                 throw new IndexOutOfBoundsException(position, colVar.getInt());
-            refVariable.setValue(rowVar.getInt(), colVar.getInt(), newVariable.getInt());
+            refVariable.set(rowVar.getInt() - 1, colVar.getInt() - 1, newVariable.getInt());
         }
         else {
-            refVariable.setValue(newVariable.evaluate());
+            refVariable.set(newVariable.evaluate());
         }
     }
 }

@@ -2,6 +2,7 @@ package tkom.ast;
 
 import tkom.TokenID;
 import tkom.ast.expression.MathExpr;
+import tkom.exception.ExecutionException.ExecutionException;
 
 public class Value {
     private MathExpr expression;
@@ -16,7 +17,7 @@ public class Value {
         this.number = number;
     }
 
-    public int evaluate() {
+    public int evaluate() throws ExecutionException {
         return expression == null ? number : expression.evaluate().getInt();
     }
 

@@ -47,7 +47,7 @@ public class FunctionCall extends Statement {
         functionDef.execute(evaluateParameters());
     }
 
-    private LinkedList<Variable> evaluateParameters() {
+    private LinkedList<Variable> evaluateParameters() throws ExecutionException {
         LinkedList<Variable> parametersValues = new LinkedList<>();
         for (MathExpr expr : parameters)
             parametersValues.add(expr.evaluate());

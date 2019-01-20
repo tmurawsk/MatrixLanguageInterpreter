@@ -24,7 +24,7 @@ public class BaseLogicExpr extends LogicExpression {
         logicExpr = expr;
     }
 
-    public Variable evaluateMath() {
+    public Variable evaluateMath() throws ExecutionException {
         return mathExpr.evaluate();
     }
 

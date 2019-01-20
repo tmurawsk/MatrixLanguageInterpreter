@@ -22,6 +22,7 @@ func main () num {
     }
 
     print("Matrix multiplication:", matrix * [32, 16; 8, 4; 2, 1]);
+    print("6 ^ 3 = ", power(6,3));
 
     return 0;
 }
@@ -53,4 +54,10 @@ func foo (num a, num height, num width) mat {
     }
 
     return result;
+}
+
+func power (num x, num i) num {
+    if (i == 0) { return 1; }
+    else { return x * power(x, i-1); }
+    return 1;
 }

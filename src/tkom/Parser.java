@@ -8,21 +8,21 @@ import tkom.exception.ParseException.*;
 
 import java.util.*;
 
-class Parser {
+public class Parser {
     private Lexer lexer;
 
     private ArrayList<FunctionCall> functionCallsToValidate;
 
     private LinkedList<HashSet<String>> localVariablesStack;
 
-    Parser(Lexer lexer) {
+    public Parser(Lexer lexer) {
         this.lexer = lexer;
         functionCallsToValidate = new ArrayList<>();
         localVariablesStack = new LinkedList<>();
         localVariablesStack.add(new HashSet<>());
     }
 
-    void parseProgram() throws ParseException {
+    public void parseProgram() throws ParseException {
         functionCallsToValidate.clear();
         Token nextToken = lexer.peekToken();
 

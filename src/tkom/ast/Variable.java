@@ -123,7 +123,7 @@ public class Variable {
         }
     }
 
-    int getThrows(int i, int j) throws ExecutionException {
+    public int getThrows(int i, int j) throws ExecutionException {
         evaluate();
         if (i < 0 || i >= value.size())
             throw new IndexOutOfBoundsException(new Position(), i);

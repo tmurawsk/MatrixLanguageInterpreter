@@ -3,7 +3,6 @@ package tkom.exception.ExecutionException;
 import tkom.Position;
 import tkom.Token;
 import tkom.TokenID;
-import tkom.ast.FunctionDef;
 import tkom.ast.Program;
 import tkom.ast.statement.ReturnStatement;
 
@@ -13,7 +12,7 @@ public class TypeMismatchException extends ExecutionException {
     }
 
     private TypeMismatchException(Position position, String subject, String expectedType, String givenType) {
-        this(position, subject + " mismatch.\n\t\texpected: " + expectedType + "\n\t\twas: " + givenType);
+        this(position, subject + " mismatch\n\t\texpected: " + expectedType + "\n\t\twas: " + givenType);
     }
 
     public TypeMismatchException(Position position, ReturnStatement returnStatement, TokenID givenType) {

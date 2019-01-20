@@ -45,15 +45,13 @@ public class InitStatement extends Statement {
                 if (right.getType() != TokenID.Num)
                     throw new TypeMismatchException(rightExpr.getPosition(), TokenID.Num, right.getType());
                 newVariable.initSize(left.getInt(), right.getInt());
-            }
-            else {
+            } else {
                 if (type != left.getType())
                     throw new TypeMismatchException(leftExpr.getPosition(), type, left.getType());
                 newVariable = left;
                 newVariable.setName(name);
             }
-        }
-        else {
+        } else {
             newVariable = new Variable(type, name);
         }
         Program.addVariable(newVariable);

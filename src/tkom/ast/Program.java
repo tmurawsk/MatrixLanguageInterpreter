@@ -33,7 +33,7 @@ public class Program {
         initStatements.add(initStatement);
     }
 
-    public static void pushFunctionCall(FunctionDef functionDef) {
+    static void pushFunctionCall(FunctionDef functionDef) {
         functionCallStack.push(functionDef);
     }
 
@@ -60,7 +60,7 @@ public class Program {
             functionCallStack.peek().addVariable(variable);
     }
 
-    public static Variable getVariable(String name) {
+    static Variable getVariable(String name) {
         if (!functionCallStack.empty()) {
             Variable variable = functionCallStack.peek().getVariable(name);
             if (variable != null)

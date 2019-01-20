@@ -3,10 +3,8 @@ package tkom.ast;
 import javafx.util.Pair;
 import tkom.Position;
 import tkom.TokenID;
-import tkom.exception.ExecutionException.ExecutionException;
+import tkom.exception.ExecutionException.*;
 import tkom.exception.ExecutionException.IndexOutOfBoundsException;
-import tkom.exception.ExecutionException.MathException;
-import tkom.exception.ExecutionException.TypeMismatchException;
 
 import java.util.ArrayList;
 
@@ -68,21 +66,21 @@ public class Variable {
         return type;
     }
 
-    public void set(ArrayList<ArrayList<Integer>> value) {
+    void set(ArrayList<ArrayList<Integer>> value) {
         isEvaluated = true;
         this.value = value;
     }
 
-    public void set(int i, int j, int newValue) {
+    void set(int i, int j, int newValue) {
         isEvaluated = true;
         value.get(i).set(j, newValue);
     }
 
-    public void set(int newValue) {
+    private void set(int newValue) {
         isEvaluated = true;
         value = new ArrayList<>();
-        value.set(0, new ArrayList<>());
-        value.get(0).set(0, newValue);
+        value.add(new ArrayList<>());
+        value.get(0).add(newValue);
     }
 
     public void setName(String name) {
@@ -105,6 +103,7 @@ public class Variable {
         }
 
         type = (height == width && height == 1) ? TokenID.Num : TokenID.Mat;
+        isEvaluated = true;
     }
 
     private void initializeValuesMatrix() {
@@ -124,7 +123,8 @@ public class Variable {
         }
     }
 
-    public int getThrows(int i, int j) throws ExecutionException {
+    int getThrows(int i, int j) throws ExecutionException {
+        evaluate();
         if (i < 0 || i >= value.size())
             throw new IndexOutOfBoundsException(new Position(), i);
         if (j < 0 || j >= value.get(0).size())
@@ -137,43 +137,59 @@ public class Variable {
         return value.get(i).get(j);
     }
 
-    public int getInt() {
+    public int getInt() throws ExecutionException {
+        evaluate();
         return value.get(0).get(0);
     }
 
-    public int getHeight() {
+    int getHeight() {
         return isEvaluated ? value.size() : valueExpressions.size();
     }
 
-    public int getWidth() {
+    int getWidth() {
         return isEvaluated ? value.get(0).size() : valueExpressions.get(0).size();
     }
 
-    public Pair<Integer, Integer> getSize() {
+    private Pair<Integer, Integer> getSize() {
         return new Pair<>(getHeight(), getWidth());
     }
 
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
+    public String getString() {
+        if (type == TokenID.Num)
+            return String.valueOf(value.get(0).get(0));
+
+        StringBuilder sb = new StringBuilder("\n[");
         int maxInt = -1000000;
         for (ArrayList<Integer> array : value)
             for (int i : array)
                 maxInt = i > maxInt ? i : maxInt;
 
-        int tabNumber = String.valueOf(maxInt).length() / 4 + 1;
-        for (int i = 0; i < value.size(); i++) {
-            for (int j = 0; j < value.get(0).size(); j++) {
-                int currInt = get(j, i);
+        int tabNumber = String.valueOf(maxInt).length() + 2;
+        int height = getHeight();
+        int width = getWidth();
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (i != 0 && j == 0)
+                    sb.append(' ');
+
+                int currInt = get(i, j);
                 sb.append(currInt);
-                for (int k = 0; k < tabNumber - String.valueOf(currInt).length() / 4; k++)
-                    sb.append('\t');
+
+                int limit = tabNumber - String.valueOf(currInt).length();
+
+                for (int k = 0; k < limit && j < width - 1; k++)
+                    sb.append(' ');
             }
+            if (i < height - 1)
+                sb.append('\n');
         }
+        sb.append("]\n");
 
         return sb.toString();
     }
 
-    public ArrayList<ArrayList<Integer>> evaluateAnyway() throws ExecutionException {
+    ArrayList<ArrayList<Integer>> evaluateAnyway() throws ExecutionException {
         return evaluate(false);
     }
 
@@ -182,7 +198,14 @@ public class Variable {
     }
 
     private ArrayList<ArrayList<Integer>> evaluate(boolean checkIfEvaluated) throws ExecutionException {
-        if (isEvaluated && checkIfEvaluated)
+        if (valueExpressions == null && value == null) {
+            if (type == TokenID.Num)
+                set(0);
+            else
+                throw new NotInitializedException(new Position(), this);
+        }
+
+        if ((isEvaluated && checkIfEvaluated) || valueExpressions == null)
             return value;
 
         for (int i = 0; i < valueExpressions.size(); i++) {
@@ -194,6 +217,7 @@ public class Variable {
                 set(i, j, expr.evaluate());
             }
         }
+        isEvaluated = true;
 
         return value;
     }

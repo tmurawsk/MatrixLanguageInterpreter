@@ -154,17 +154,17 @@ public class Lexer {
             case '/':
                 return new Token(TokenID.Divide, position, c);
             case '=':
-                return ifNextIsEqual('=', TokenID.Equal, TokenID.Assign, position, c);
+                return ifNextIsEqual('=', TokenID.Equal, TokenID.Assign, position);
             case '!':
-                return ifNextIsEqual('=', TokenID.Unequal, TokenID.Negation, position, c);
+                return ifNextIsEqual('=', TokenID.Unequal, TokenID.Negation, position);
             case '<':
-                return ifNextIsEqual('=', TokenID.LessOrEqual, TokenID.Less, position, c);
+                return ifNextIsEqual('=', TokenID.LessOrEqual, TokenID.Less, position);
             case '>':
-                return ifNextIsEqual('=', TokenID.GreaterOrEqual, TokenID.Greater, position, c);
+                return ifNextIsEqual('=', TokenID.GreaterOrEqual, TokenID.Greater, position);
             case '&':
-                return ifNextIsEqual('&', TokenID.And, TokenID.Invalid, position, c);
+                return ifNextIsEqual('&', TokenID.And, TokenID.Invalid, position);
             case '|':
-                return ifNextIsEqual('|', TokenID.Or, TokenID.Invalid, position, c);
+                return ifNextIsEqual('|', TokenID.Or, TokenID.Invalid, position);
             default:
                 return new Token(TokenID.Invalid, position, c);
         }
@@ -186,7 +186,7 @@ public class Lexer {
         return new Token(TokenID.String, positionBefore, tokenValue.toString());
     }
 
-    private Token ifNextIsEqual(char expectedChar, TokenID tokenIfTrue, TokenID tokenIfFalse, Position position, char givenChar) throws IOException {
+    private Token ifNextIsEqual(char expectedChar, TokenID tokenIfTrue, TokenID tokenIfFalse, Position position) throws IOException {
         char c = reader.peek();
 
         if (c == expectedChar) {

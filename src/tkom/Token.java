@@ -66,48 +66,48 @@ public class Token {
     private static Map<TokenID, String> initializeNameMap() {
         Map<TokenID, String> m = new HashMap<>();
 
-        m.put(TokenID.Func,     "Func");
-        m.put(TokenID.If,       "If");
-        m.put(TokenID.Else,     "Else");
-        m.put(TokenID.While,    "While");
-        m.put(TokenID.Print,    "Print");
-        m.put(TokenID.Read,     "Read");
-        m.put(TokenID.Return,   "Return");
-        m.put(TokenID.Num,      "Num");
-        m.put(TokenID.Mat,      "Mat");
+        m.put(TokenID.Func, "Func");
+        m.put(TokenID.If, "If");
+        m.put(TokenID.Else, "Else");
+        m.put(TokenID.While, "While");
+        m.put(TokenID.Print, "Print");
+        m.put(TokenID.Read, "Read");
+        m.put(TokenID.Return, "Return");
+        m.put(TokenID.Num, "Num");
+        m.put(TokenID.Mat, "Mat");
 
-        m.put(TokenID.Semicolon,            "Semicolon");
-        m.put(TokenID.Comma,                "Comma");
-        m.put(TokenID.RoundBracketOpen,     "RoundBracketOpen");
-        m.put(TokenID.RoundBracketClose,    "RoundBracketClose");
-        m.put(TokenID.CurlyBracketOpen,     "CurlyBracketOpen");
-        m.put(TokenID.CurlyBracketClose,    "CurlyBracketClose");
-        m.put(TokenID.SquareBracketOpen,    "SquareBracketOpen");
-        m.put(TokenID.SquareBracketClose,   "SquareBracketClose");
+        m.put(TokenID.Semicolon, "Semicolon");
+        m.put(TokenID.Comma, "Comma");
+        m.put(TokenID.RoundBracketOpen, "RoundBracketOpen");
+        m.put(TokenID.RoundBracketClose, "RoundBracketClose");
+        m.put(TokenID.CurlyBracketOpen, "CurlyBracketOpen");
+        m.put(TokenID.CurlyBracketClose, "CurlyBracketClose");
+        m.put(TokenID.SquareBracketOpen, "SquareBracketOpen");
+        m.put(TokenID.SquareBracketClose, "SquareBracketClose");
 
-        m.put(TokenID.Plus,     "Plus");
-        m.put(TokenID.Minus,    "Minus");
+        m.put(TokenID.Plus, "Plus");
+        m.put(TokenID.Minus, "Minus");
         m.put(TokenID.Multiply, "Multiply");
-        m.put(TokenID.Divide,   "Divide");
-        m.put(TokenID.Assign,   "Assign");
+        m.put(TokenID.Divide, "Divide");
+        m.put(TokenID.Assign, "Assign");
 
         m.put(TokenID.Negation, "Negation");
-        m.put(TokenID.Or,       "Or");
-        m.put(TokenID.And,      "And");
+        m.put(TokenID.Or, "Or");
+        m.put(TokenID.And, "And");
 
-        m.put(TokenID.Equal,                "Equal");
-        m.put(TokenID.Unequal,              "Unequal");
-        m.put(TokenID.Less,                 "Less");
-        m.put(TokenID.Greater,              "Greater");
-        m.put(TokenID.LessOrEqual,          "LessOrEqual");
-        m.put(TokenID.GreaterOrEqual,       "GreaterOrEqual");
+        m.put(TokenID.Equal, "Equal");
+        m.put(TokenID.Unequal, "Unequal");
+        m.put(TokenID.Less, "Less");
+        m.put(TokenID.Greater, "Greater");
+        m.put(TokenID.LessOrEqual, "LessOrEqual");
+        m.put(TokenID.GreaterOrEqual, "GreaterOrEqual");
 
-        m.put(TokenID.Name,     "Name");
-        m.put(TokenID.Number,   "Number");
-        m.put(TokenID.String,   "String");
+        m.put(TokenID.Name, "Name");
+        m.put(TokenID.Number, "Number");
+        m.put(TokenID.String, "String");
 
-        m.put(TokenID.Invalid,  "INVALID");
-        m.put(TokenID.Eof,      "Eof");
+        m.put(TokenID.Invalid, "INVALID");
+        m.put(TokenID.Eof, "Eof");
 
         return m;
     }
@@ -115,15 +115,15 @@ public class Token {
     private static Map<String, TokenID> initializeKeywordMap() {
         Map<String, TokenID> m = new HashMap<>();
 
-        m.put("func",   TokenID.Func);
-        m.put("if",     TokenID.If);
-        m.put("else",   TokenID.Else);
-        m.put("while",  TokenID.While);
-        m.put("print",  TokenID.Print);
-        m.put("read",   TokenID.Read);
+        m.put("func", TokenID.Func);
+        m.put("if", TokenID.If);
+        m.put("else", TokenID.Else);
+        m.put("while", TokenID.While);
+        m.put("print", TokenID.Print);
+        m.put("read", TokenID.Read);
         m.put("return", TokenID.Return);
-        m.put("num",    TokenID.Num);
-        m.put("mat",    TokenID.Mat);
+        m.put("num", TokenID.Num);
+        m.put("mat", TokenID.Mat);
 
         return m;
     }

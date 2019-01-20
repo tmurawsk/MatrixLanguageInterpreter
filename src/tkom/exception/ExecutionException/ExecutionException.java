@@ -8,5 +8,5 @@ public abstract class ExecutionException extends Exception {
                 + "ERROR: " + message);
     }
 
-    public abstract ExecutionException setPosition (Position position);
+    public abstract ExecutionException setPosition(Position position);
 }

@@ -35,8 +35,7 @@ public class IfStatement extends Statement {
         if (condition == null || condition.evaluate()) {
             for (Statement stmnt : statements)
                 stmnt.execute();
-        }
-        else {
+        } else if (elseStatement != null) {
             elseStatement.execute();
         }
 

@@ -46,7 +46,7 @@ public class PrintStatement extends Statement {
 
         public String getString() throws ExecutionException {
             if (mathExpr != null)
-                return mathExpr.evaluate().toString();
+                return mathExpr.evaluate().getString();
             else
                 return string;
         }

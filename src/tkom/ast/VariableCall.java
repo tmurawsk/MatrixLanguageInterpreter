@@ -90,7 +90,7 @@ public class VariableCall {
             Variable rowVar = evaluateAndCheckTypeNum(row);
             Variable colVar = evaluateAndCheckTypeNum(column);
 
-            return new Variable(refVariable.getThrows(rowVar.getInt(), colVar.getInt()));
+            return new Variable(refVariable.getThrows(rowVar.getInt() - 1, colVar.getInt() - 1));
         }
         else
             return new Variable(refVariable.evaluate(), true);

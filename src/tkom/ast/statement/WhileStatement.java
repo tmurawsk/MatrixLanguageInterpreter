@@ -24,7 +24,7 @@ public class WhileStatement extends Statement {
 
     @Override
     public void execute() throws ExecutionException {
-        while (!condition.evaluate()) {
+        while (condition.evaluate()) {
             Program.pushStackLevel();
 
             for (Statement stmnt : statements)

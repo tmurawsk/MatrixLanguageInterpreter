@@ -4,8 +4,6 @@ import tkom.Position;
 import tkom.TokenID;
 import tkom.ast.Variable;
 import tkom.exception.ExecutionException.ExecutionException;
-import tkom.exception.ExecutionException.MathException;
-import tkom.exception.ExecutionException.TypeMismatchException;
 
 import java.util.LinkedList;
 

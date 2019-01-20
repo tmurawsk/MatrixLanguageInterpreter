@@ -213,8 +213,6 @@ class Parser {
                 initStatement.setExpressions(parseMatrixDimension(), parseMatrixDimension());
             } else {
                 MathExpr expr = parseMathExpr();
-//                if (type.getId() != expr.getType())
-//                    throw new TypeMismatchException(expr.getPosition(), type.getId(), expr.getType());
                 initStatement.setExpressions(expr, null);
             }
         }
@@ -228,8 +226,6 @@ class Parser {
     private MathExpr parseMatrixDimension() throws ParseException {
         accept(TokenID.SquareBracketOpen);
         MathExpr expr = parseMathExpr();
-//        if (expr.getType() != TokenID.Num)
-//            throw new TypeMismatchException(expr.getPosition(), TokenID.Num, expr.getType());
         accept(TokenID.SquareBracketClose);
         return expr;
     }
@@ -238,8 +234,6 @@ class Parser {
         VariableCall variableCall = parseVariableCall();
         accept(TokenID.Assign);
         MathExpr expression = parseMathExpr();
-//        if (variableCall.getType() != expression.getType())
-//            throw new TypeMismatchException(expression.getPosition(), variableCall.getType(), expression.getType());
         accept(TokenID.Semicolon);
         return new AssignStatement(variableCall.getPosition(), variableCall, expression);
     }
@@ -351,20 +345,9 @@ class Parser {
     private ReturnStatement parseReturnStatement() throws ParseException {
         Token firstToken = accept(TokenID.Return);
         MathExpr expr = parseMathExpr();
-//        validateReturnStatementType(expr);
         accept(TokenID.Semicolon);
         return new ReturnStatement(firstToken.getPosition(), expr);
     }
-
-    /*private void validateReturnStatementType(MathExpr expr) throws ParseException {
-        Statement parent = expr.getParent();
-        while (!(parent instanceof FunctionDef))
-            parent = parent.getParent();
-
-        FunctionDef functionDef = (FunctionDef) parent;
-        if (functionDef.returnType != expr.getType())
-            throw new TypeMismatchException(expr.getPosition(), functionDef, expr.getType());
-    }*/
 
     private LogicExpr parseLogicExpr() throws ParseException {
         AndExpr andExpr = parseAndExpr();
@@ -504,8 +487,8 @@ class Parser {
         validateVariable(name);
         VariableCall variableCall = new VariableCall(name.getValue(), name.getPosition());
         if (lexer.peekToken().getId() == TokenID.SquareBracketOpen) {
-            variableCall.setColumn(parseMatrixDimension());
             variableCall.setRow(parseMatrixDimension());
+            variableCall.setColumn(parseMatrixDimension());
         }
         return variableCall;
     }

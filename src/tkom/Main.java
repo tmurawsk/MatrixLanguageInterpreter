@@ -1,11 +1,9 @@
 package tkom;
 
-import tkom.ast.FunctionDef;
 import tkom.ast.Program;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.LinkedList;
 
 public class Main {
 
@@ -39,8 +37,6 @@ public class Main {
 
             parser.parseProgram();
 
-//            LinkedList<FunctionDef> functions = Program.functionDefinitions;
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,8 +50,6 @@ public class Main {
             parser.parseProgram();
 
             Program.execute();
-
-//            LinkedList<FunctionDef> functions = Program.functionDefinitions;
 
         } catch (Exception e) {
             e.printStackTrace();

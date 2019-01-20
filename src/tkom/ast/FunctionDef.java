@@ -39,6 +39,7 @@ public class FunctionDef extends Statement {
         this.arguments = arguments;
     }
 
+    @SuppressWarnings("CopyConstructorMissesField")
     private FunctionDef(FunctionDef f) {
         this(f.getPosition(), f.name, f.returnType, f.getArguments());
         this.setStatements(f.getStatements());
@@ -69,7 +70,7 @@ public class FunctionDef extends Statement {
         return null;
     }
 
-    public Variable getResult() {
+    private Variable getResult() {
         return result;
     }
 
@@ -105,15 +106,16 @@ public class FunctionDef extends Statement {
             for (int i = 0; i < callParameters.size(); i++) {
                 Variable param = new Variable(arguments.get(i).getKey(), arguments.get(i).getValue());
                 param.set(callParameters.get(i).evaluate());
-                addVariable(param);
+                functionDef.addVariable(param);
             }
         }
 
         try {
             for (Statement stmnt : statements)
                 stmnt.execute();
+        } catch (ReturnValue e) {
+            result = functionDef.getResult();
         }
-        catch (ReturnValue ignored) {}
 
         Program.popFunctionCall();
     }

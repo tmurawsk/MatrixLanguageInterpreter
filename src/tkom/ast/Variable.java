@@ -308,11 +308,9 @@ public class Variable {
     private int multiplyRowByColumn(Variable v, int row, int col) {
         int result = 0;
         int width = getWidth();
-        int height = v.getHeight();
 
         for (int i = 0; i < width; i++)
-            for (int j = 0; j < height; j++)
-                result += get(row, i) * v.get(j, col);
+            result += get(row, i) * v.get(i, col);
 
         return result;
     }

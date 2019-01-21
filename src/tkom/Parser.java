@@ -23,6 +23,7 @@ public class Parser {
     }
 
     public void parseProgram() throws ParseException {
+        Program.clear();
         functionCallsToValidate.clear();
         Token nextToken = lexer.peekToken();
 
@@ -134,19 +135,25 @@ public class Parser {
 
     private LinkedList<Pair<TokenID, String>> parseArguments() throws ParseException {
         LinkedList<Pair<TokenID, String>> arguments = new LinkedList<>();
+        HashSet<String> names = new HashSet<>();
 
         if (lexer.peekToken().getId() == TokenID.RoundBracketClose)
             return arguments;
 
         Token type = parseType();
         Token name = accept(TokenID.Name);
+
         arguments.add(new Pair<>(type.getId(), name.getValue()));
+        names.add(name.getValue());
 
         while (lexer.peekToken().getId() == TokenID.Comma) {
             accept(TokenID.Comma);
             type = parseType();
             name = accept(TokenID.Name);
+            if (names.contains(name.getValue()))
+                throw new DuplicateException(name.getPosition(), new Variable(type.getId(), name.getValue()));
             arguments.add(new Pair<>(type.getId(), name.getValue()));
+            names.add(name.getValue());
         }
 
         return arguments;
@@ -186,10 +193,13 @@ public class Parser {
                     break;
                 case Name:
                     Token secondToken = lexer.peekFollowingToken();
-                    if (secondToken.getId() == TokenID.RoundBracketOpen)
+                    if (secondToken.getId() == TokenID.RoundBracketOpen) {
                         statements.add(parseFunctionCall());
-                    else
+                        accept(TokenID.Semicolon);
+                    }
+                    else {
                         statements.add(parseAssignStatement());
+                    }
                     break;
                 default:
                     isStatementMatched = false;
@@ -209,11 +219,15 @@ public class Parser {
 
         if (lexer.peekToken().getId() == TokenID.Assign) {
             accept(TokenID.Assign);
-            if (lexer.peekToken().getId() == TokenID.SquareBracketOpen && type.getId() == TokenID.Mat) {
-                initStatement.setExpressions(parseMatrixDimension(), parseMatrixDimension());
+            if (lexer.peekToken().getId() == TokenID.CurlyBracketOpen && type.getId() == TokenID.Mat) {
+                accept(TokenID.CurlyBracketOpen);
+                MathExpr left = parseMathExpr();
+                accept(TokenID.CurlyBracketClose);
+                accept(TokenID.CurlyBracketOpen);
+                initStatement.setExpressions(left, parseMathExpr());
+                accept(TokenID.CurlyBracketClose);
             } else {
-                MathExpr expr = parseMathExpr();
-                initStatement.setExpressions(expr, null);
+                initStatement.setExpressions(parseMathExpr(), null);
             }
         }
 

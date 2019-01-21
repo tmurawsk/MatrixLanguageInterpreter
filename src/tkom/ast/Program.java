@@ -41,6 +41,13 @@ public class Program {
         return functionCallStack.pop();
     }
 
+    public static void clear() {
+        initStatements = new LinkedList<>();
+        functionDefinitions = new LinkedList<>();
+        globalVariables = new HashMap<>();
+        functionCallStack = new Stack<>();
+    }
+
     public static void pushStackLevel() {
         functionCallStack.peek().pushStackLevel();
     }
@@ -60,7 +67,7 @@ public class Program {
             functionCallStack.peek().addVariable(variable);
     }
 
-    static Variable getVariable(String name) {
+    public static Variable getVariable(String name) {
         if (!functionCallStack.empty()) {
             Variable variable = functionCallStack.peek().getVariable(name);
             if (variable != null)

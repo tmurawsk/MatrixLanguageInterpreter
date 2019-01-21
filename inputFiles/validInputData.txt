@@ -2,8 +2,9 @@ num globalNum = -10;
 
 func main () num {
     num n;
-    print("Please give the number:");
     read(n);
+    print("Please give the number:");
+    foo(n, 2, 3);
     mat matrix = foo(n, 2, 3);
     mat matrixLiteral = 5 * ([  1, 2,  3; 4, 6,  5 * 3 - 1] +
                              [ -2, n, 33; 1, 0, -globalNum]);
@@ -14,7 +15,7 @@ func main () num {
     print ("My function matrix: ", matrix);
     print ("My matrix literal: ", matrixLiteral);
 
-    if(n + 3 > 0 && (globalNum == n || globalNum != matrix[1][2])) {
+    if(n + 3 > 0 || (globalNum == n && globalNum != matrix[1][2])) {
         print("Conditions are met, here is matrix sum: ", matrixSum);
     }
     else {
@@ -41,7 +42,7 @@ func foo (num a, num height, num width) mat {
     }
     num i = 1;
     num j;
-    mat result = [height][width];
+    mat result = {height}{width};
 
     while (i <= height) {
         j = 1;

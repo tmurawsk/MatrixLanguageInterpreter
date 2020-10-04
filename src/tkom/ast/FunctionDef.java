@@ -1,8 +1,11 @@
 package tkom.ast;
 
+import javafx.util.Pair;
 import tkom.Position;
 import tkom.TokenID;
 import tkom.ast.statement.Statement;
+import tkom.exception.ExecutionException.ExecutionException;
+import tkom.exception.ExecutionException.ReturnValue;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,9 +16,11 @@ public class FunctionDef extends Statement {
 
     public TokenID returnType;
 
-    private LinkedList<Variable> arguments;
+    private LinkedList<Pair<TokenID, String>> arguments;
 
     private LinkedList<Statement> statements;
+
+    private LinkedList<Variable> callParameters;
 
     private Stack<HashMap<String, Variable>> localVariables;
 
@@ -24,21 +29,36 @@ public class FunctionDef extends Statement {
     private FunctionDef(Position position) {
         super(position);
         localVariables = new Stack<>();
+        localVariables.push(new HashMap<>());
     }
 
-    public FunctionDef(Position position, String name, TokenID returnType, LinkedList<Variable> arguments) {
+    public FunctionDef(Position position, String name, TokenID returnType, LinkedList<Pair<TokenID, String>> arguments) {
         this(position);
         this.name = name;
         this.returnType = returnType;
         this.arguments = arguments;
     }
 
-    public LinkedList<Variable> getArguments() {
+    @SuppressWarnings("CopyConstructorMissesField")
+    private FunctionDef(FunctionDef f) {
+        this(f.getPosition(), f.name, f.returnType, f.getArguments());
+        this.setStatements(f.getStatements());
+    }
+
+    public LinkedList<Pair<TokenID, String>> getArguments() {
         return arguments;
+    }
+
+    private LinkedList<Statement> getStatements() {
+        return statements;
     }
 
     public void setStatements(LinkedList<Statement> statements) {
         this.statements = statements;
+    }
+
+    void addVariable(Variable variable) {
+        localVariables.peek().put(variable.name, variable);
     }
 
     Variable getVariable(String name) {
@@ -50,16 +70,53 @@ public class FunctionDef extends Statement {
         return null;
     }
 
-    public Variable evaluate(LinkedList<Variable> parameters) {
-        return null; //TODO
+    private Variable getResult() {
+        return result;
+    }
+
+    public void setResult(Variable result) {
+        this.result = result;
+    }
+
+    void pushStackLevel() {
+        localVariables.push(new HashMap<>());
+    }
+
+    void popStackLevel() {
+        localVariables.pop();
+    }
+
+    public Variable evaluate(LinkedList<Variable> parameters) throws ExecutionException {
+        result = null;
+        execute(parameters);
+        return result;
+    }
+
+    public void execute(LinkedList<Variable> callParameters) throws ExecutionException {
+        this.callParameters = callParameters;
+        execute();
     }
 
     @Override
-    public void execute() {
-        //TODO trzeba tu robić new FunctionDef(); wtedy będzie się ją dodawać do stosu wywołań FunctionDef w Programie
-        // wtedy jak chcemy się odwołać do Variable to bierzemy z wierzchu stosu FunctionDef i getVariable(name)
-        // wtedy jak kończymy evaluate na FunctionDef to robimy na stosie pop()
+    public void execute() throws ExecutionException {
+        FunctionDef functionDef = new FunctionDef(this);
+        Program.pushFunctionCall(functionDef);
 
-        //TODO saves result to "result" variable
+        if (callParameters != null) {
+            for (int i = 0; i < callParameters.size(); i++) {
+                Variable param = new Variable(arguments.get(i).getKey(), arguments.get(i).getValue());
+                param.set(callParameters.get(i).evaluate());
+                functionDef.addVariable(param);
+            }
+        }
+
+        try {
+            for (Statement stmnt : statements)
+                stmnt.execute();
+        } catch (ReturnValue e) {
+            result = functionDef.getResult();
+        }
+
+        Program.popFunctionCall();
     }
 }

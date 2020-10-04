@@ -1,11 +1,13 @@
 package tkom.ast.expression;
 
 import tkom.Position;
+import tkom.ast.Variable;
+import tkom.exception.ExecutionException.ExecutionException;
 
 public class BaseLogicExpr extends LogicExpression {
     private boolean isNegation;
-    private MathExpr mathExpr;
     private LogicExpr logicExpr;
+    private MathExpr mathExpr;
 
     private BaseLogicExpr(Position position, boolean isNegation) {
         super(position);
@@ -22,8 +24,12 @@ public class BaseLogicExpr extends LogicExpression {
         logicExpr = expr;
     }
 
+    Variable evaluateMath() throws ExecutionException {
+        return mathExpr.evaluate();
+    }
+
     @Override
-    public boolean evaluate() {
-        return false; //TODO
+    public boolean evaluate() throws ExecutionException {
+        return isNegation != logicExpr.evaluate();
     }
 }

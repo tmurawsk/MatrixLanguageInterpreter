@@ -1,5 +1,7 @@
 package tkom;
 
+import tkom.ast.Program;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
@@ -9,7 +11,9 @@ public class Main {
 
 //        lexerTest();
 
-        parserTest();
+//        parserTest();
+
+        execute();
     }
 
     private static void lexerTest() {
@@ -32,6 +36,20 @@ public class Main {
             Parser parser = new Parser(lexer);
 
             parser.parseProgram();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void execute() {
+        try {
+            Lexer lexer = new Lexer(new FileInputStream("inputFiles/validInputData.txt"));
+            Parser parser = new Parser(lexer);
+
+            parser.parseProgram();
+
+            Program.execute();
 
         } catch (Exception e) {
             e.printStackTrace();

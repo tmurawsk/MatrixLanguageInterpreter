@@ -1,7 +1,10 @@
 num globalNum = -10;
 
 func main () num {
-    num n = 5;
+    num n;
+    read(n);
+    print("Please give the number:");
+    foo(n, 2, 3);
     mat matrix = foo(n, 2, 3);
     mat matrixLiteral = 5 * ([  1, 2,  3; 4, 6,  5 * 3 - 1] +
                              [ -2, n, 33; 1, 0, -globalNum]);
@@ -10,14 +13,17 @@ func main () num {
 
     print ("My num: ", n, " and global num: ", globalNum);
     print ("My function matrix: ", matrix);
-    print ("My own matrix: ", matrixLiteral);
+    print ("My matrix literal: ", matrixLiteral);
 
-    if(n + 3 > 0 && (globalNum == n || globalNum != matrix[1][2])) {
+    if(n + 3 > 0 || (globalNum == n && globalNum != matrix[1][2])) {
         print("Conditions are met, here is matrix sum: ", matrixSum);
     }
     else {
         print("Conditions are not met, here is negative matrix sum : ", -matrixSum);
     }
+
+    print("Matrix multiplication:", matrix * [32, 16; 8, 4; 2, 1]);
+    print("6 ^ 3 = ", power(6,3));
 
     return 0;
 }
@@ -34,12 +40,13 @@ func foo (num a, num height, num width) mat {
     if (a < 0) {
         a = -a;
     }
-    num i = 0;
-    num j = 0;
-    mat result = [height][width];
+    num i = 1;
+    num j;
+    mat result = {height}{width};
 
-    while (i < height) {
-        while (j < width) {
+    while (i <= height) {
+        j = 1;
+        while (j <= width) {
             result[i][j] = a;
             a = a + 1;
             j = j + 1;
@@ -48,4 +55,10 @@ func foo (num a, num height, num width) mat {
     }
 
     return result;
+}
+
+func power (num x, num i) num {
+    if (i == 0) { return 1; }
+    else { return x * power(x, i-1); }
+    return 1;
 }

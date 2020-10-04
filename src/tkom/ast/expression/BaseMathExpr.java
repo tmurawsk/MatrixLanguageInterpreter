@@ -5,6 +5,7 @@ import tkom.TokenID;
 import tkom.ast.FunctionCall;
 import tkom.ast.Variable;
 import tkom.ast.VariableCall;
+import tkom.exception.ExecutionException.ExecutionException;
 
 public class BaseMathExpr extends MathExpression {
     private boolean isMinus;
@@ -45,7 +46,16 @@ public class BaseMathExpr extends MathExpression {
     }
 
     @Override
-    public Variable evaluate() {
-        return null; //TODO
+    public Variable evaluate() throws ExecutionException {
+        if (expression != null)
+            return !isMinus ? expression.evaluate() :
+                    expression.evaluate().multiply(new Variable(-1));
+
+        if (variableCall != null)
+            return !isMinus ? variableCall.evaluate() :
+                    variableCall.evaluate().multiply(new Variable(-1));
+
+        return !isMinus ? functionCall.evaluate() :
+                functionCall.evaluate().multiply(new Variable(-1));
     }
 }

@@ -1,6 +1,7 @@
 package tkom.ast.expression;
 
 import tkom.Position;
+import tkom.exception.ExecutionException.ExecutionException;
 
 import java.util.LinkedList;
 
@@ -18,7 +19,12 @@ public class AndExpr extends LogicExpression {
     }
 
     @Override
-    public boolean evaluate() {
-        return false; //TODO
+    public boolean evaluate() throws ExecutionException {
+        boolean result = true;
+        for (RelationExpr expr : relationExprs) {
+            if (!expr.evaluate())
+                result = false;
+        }
+        return result;
     }
 }

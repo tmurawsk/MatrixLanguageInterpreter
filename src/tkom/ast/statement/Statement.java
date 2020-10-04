@@ -1,6 +1,7 @@
 package tkom.ast.statement;
 
 import tkom.Position;
+import tkom.exception.ExecutionException.ExecutionException;
 
 public abstract class Statement {
     protected Position position;
@@ -13,5 +14,5 @@ public abstract class Statement {
         return position;
     }
 
-    public abstract void execute();
+    public abstract void execute() throws ExecutionException;
 }

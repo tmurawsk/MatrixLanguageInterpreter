@@ -4,7 +4,7 @@ public class Position {
     public int lineNum;
     public int charNum;
 
-    Position() {
+    public Position() {
         this(1, 1);
     }
 

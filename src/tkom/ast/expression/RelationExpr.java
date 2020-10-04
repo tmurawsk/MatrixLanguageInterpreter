@@ -2,6 +2,7 @@ package tkom.ast.expression;
 
 import tkom.Position;
 import tkom.TokenID;
+import tkom.exception.ExecutionException.ExecutionException;
 
 public class RelationExpr extends LogicExpression {
     private BaseLogicExpr leftExpr;
@@ -20,7 +21,25 @@ public class RelationExpr extends LogicExpression {
     }
 
     @Override
-    public boolean evaluate() {
-        return false; //TODO
+    public boolean evaluate() throws ExecutionException {
+        if (rightExpr == null)
+            return leftExpr.evaluate();
+
+        switch (operator) {
+            case Equal:
+                return leftExpr.evaluateMath().equals(rightExpr.evaluateMath());
+            case Unequal:
+                return leftExpr.evaluateMath().notEquals(rightExpr.evaluateMath());
+            case Greater:
+                return leftExpr.evaluateMath().greaterThan(rightExpr.evaluateMath());
+            case Less:
+                return leftExpr.evaluateMath().lowerThan(rightExpr.evaluateMath());
+            case GreaterOrEqual:
+                return leftExpr.evaluateMath().greaterOrEqualThan(rightExpr.evaluateMath());
+            case LessOrEqual:
+                return leftExpr.evaluateMath().lowerOrEqualThan(rightExpr.evaluateMath());
+        }
+
+        return false;
     }
 }

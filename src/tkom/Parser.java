@@ -1,27 +1,29 @@
 package tkom;
 
+import javafx.util.Pair;
 import tkom.ast.*;
 import tkom.ast.expression.*;
 import tkom.ast.statement.*;
-import tkom.exception.*;
+import tkom.exception.ParseException.*;
 
 import java.util.*;
 
-class Parser {
+public class Parser {
     private Lexer lexer;
 
     private ArrayList<FunctionCall> functionCallsToValidate;
 
     private LinkedList<HashSet<String>> localVariablesStack;
 
-    Parser(Lexer lexer) {
+    public Parser(Lexer lexer) {
         this.lexer = lexer;
         functionCallsToValidate = new ArrayList<>();
         localVariablesStack = new LinkedList<>();
         localVariablesStack.add(new HashSet<>());
     }
 
-    void parseProgram() throws ParseException {
+    public void parseProgram() throws ParseException {
+        Program.clear();
         functionCallsToValidate.clear();
         Token nextToken = lexer.peekToken();
 
@@ -43,11 +45,9 @@ class Parser {
 
     private void validateFunctionCalls() throws NotDefinedException {
         for (FunctionCall functionCall : functionCallsToValidate) {
-            FunctionDef functionDef = Program.getFunctionDef(functionCall);
+            FunctionDef functionDef = Program.getFunctionDef(functionCall, false);
             if (functionDef == null)
                 throw new NotDefinedException(functionCall.getPosition(), functionCall);
-
-            functionCall.setFunctionDef(functionDef);
         }
     }
 
@@ -70,10 +70,10 @@ class Parser {
         localVariablesStack.getLast().add(name);
     }
 
-    private void addVariables(Collection<Variable> arguments) {
+    private void addVariables(Collection<String> arguments) {
         if (arguments != null)
-            for (Variable v : arguments)
-                addVariable(v.name);
+            for (String name : arguments)
+                addVariable(name);
     }
 
     private boolean variableExists(String name) {
@@ -88,7 +88,7 @@ class Parser {
         Token firstToken = accept(TokenID.Func);
         Token name = accept(TokenID.Name);
         accept(TokenID.RoundBracketOpen);
-        LinkedList<Variable> arguments = parseArguments();
+        LinkedList<Pair<TokenID, String>> arguments = parseArguments();
         accept(TokenID.RoundBracketClose);
         Token type = parseType();
 
@@ -97,7 +97,7 @@ class Parser {
             throw new DuplicateException(functionDef.getPosition(), functionDef);
 
         accept(TokenID.CurlyBracketOpen);
-        LinkedList<Statement> statementBlock = parseStatementBlock(arguments);
+        LinkedList<Statement> statementBlock = parseStatementBlock(getValuesFromPairs(arguments));
         Token endOfFunctionDef = accept(TokenID.CurlyBracketClose);
 
         if (!containsReturnStatement(statementBlock))
@@ -105,6 +105,13 @@ class Parser {
 
         functionDef.setStatements(statementBlock);
         return functionDef;
+    }
+
+    private Collection<String> getValuesFromPairs(Collection<Pair<TokenID, String>> pairs) {
+        LinkedList<String> values = new LinkedList<>();
+        for (Pair<TokenID, String> pair : pairs)
+            values.add(pair.getValue());
+        return values;
     }
 
     private void validateType(Token type) throws ParseException {
@@ -126,21 +133,27 @@ class Parser {
         return false;
     }
 
-    private LinkedList<Variable> parseArguments() throws ParseException {
-        LinkedList<Variable> arguments = new LinkedList<>();
+    private LinkedList<Pair<TokenID, String>> parseArguments() throws ParseException {
+        LinkedList<Pair<TokenID, String>> arguments = new LinkedList<>();
+        HashSet<String> names = new HashSet<>();
 
         if (lexer.peekToken().getId() == TokenID.RoundBracketClose)
             return arguments;
 
         Token type = parseType();
         Token name = accept(TokenID.Name);
-        arguments.add(new Variable(type.getId(), name.getValue()));
+
+        arguments.add(new Pair<>(type.getId(), name.getValue()));
+        names.add(name.getValue());
 
         while (lexer.peekToken().getId() == TokenID.Comma) {
             accept(TokenID.Comma);
             type = parseType();
             name = accept(TokenID.Name);
-            arguments.add(new Variable(type.getId(), name.getValue()));
+            if (names.contains(name.getValue()))
+                throw new DuplicateException(name.getPosition(), new Variable(type.getId(), name.getValue()));
+            arguments.add(new Pair<>(type.getId(), name.getValue()));
+            names.add(name.getValue());
         }
 
         return arguments;
@@ -150,9 +163,9 @@ class Parser {
         return parseStatementBlock(null);
     }
 
-    private LinkedList<Statement> parseStatementBlock(Collection<Variable> initialVariables) throws ParseException {
+    private LinkedList<Statement> parseStatementBlock(Collection<String> initialVariableNames) throws ParseException {
         pushStackLevel();
-        addVariables(initialVariables);
+        addVariables(initialVariableNames);
         LinkedList<Statement> statements = new LinkedList<>();
 
         boolean isStatementMatched = true;
@@ -180,10 +193,13 @@ class Parser {
                     break;
                 case Name:
                     Token secondToken = lexer.peekFollowingToken();
-                    if (secondToken.getId() == TokenID.RoundBracketOpen)
+                    if (secondToken.getId() == TokenID.RoundBracketOpen) {
                         statements.add(parseFunctionCall());
-                    else
+                        accept(TokenID.Semicolon);
+                    }
+                    else {
                         statements.add(parseAssignStatement());
+                    }
                     break;
                 default:
                     isStatementMatched = false;
@@ -203,13 +219,15 @@ class Parser {
 
         if (lexer.peekToken().getId() == TokenID.Assign) {
             accept(TokenID.Assign);
-            if (lexer.peekToken().getId() == TokenID.SquareBracketOpen && type.getId() == TokenID.Mat) {
-                initStatement.setExpressions(parseMatrixDimension(), parseMatrixDimension());
+            if (lexer.peekToken().getId() == TokenID.CurlyBracketOpen && type.getId() == TokenID.Mat) {
+                accept(TokenID.CurlyBracketOpen);
+                MathExpr left = parseMathExpr();
+                accept(TokenID.CurlyBracketClose);
+                accept(TokenID.CurlyBracketOpen);
+                initStatement.setExpressions(left, parseMathExpr());
+                accept(TokenID.CurlyBracketClose);
             } else {
-                MathExpr expr = parseMathExpr();
-//                if (type.getId() != expr.getType())
-//                    throw new TypeMismatchException(expr.getPosition(), type.getId(), expr.getType());
-                initStatement.setExpressions(expr, null);
+                initStatement.setExpressions(parseMathExpr(), null);
             }
         }
 
@@ -222,8 +240,6 @@ class Parser {
     private MathExpr parseMatrixDimension() throws ParseException {
         accept(TokenID.SquareBracketOpen);
         MathExpr expr = parseMathExpr();
-//        if (expr.getType() != TokenID.Num)
-//            throw new TypeMismatchException(expr.getPosition(), TokenID.Num, expr.getType());
         accept(TokenID.SquareBracketClose);
         return expr;
     }
@@ -232,8 +248,6 @@ class Parser {
         VariableCall variableCall = parseVariableCall();
         accept(TokenID.Assign);
         MathExpr expression = parseMathExpr();
-//        if (variableCall.getType() != expression.getType())
-//            throw new TypeMismatchException(expression.getPosition(), variableCall.getType(), expression.getType());
         accept(TokenID.Semicolon);
         return new AssignStatement(variableCall.getPosition(), variableCall, expression);
     }
@@ -345,20 +359,9 @@ class Parser {
     private ReturnStatement parseReturnStatement() throws ParseException {
         Token firstToken = accept(TokenID.Return);
         MathExpr expr = parseMathExpr();
-//        validateReturnStatementType(expr);
         accept(TokenID.Semicolon);
         return new ReturnStatement(firstToken.getPosition(), expr);
     }
-
-    /*private void validateReturnStatementType(MathExpr expr) throws ParseException {
-        Statement parent = expr.getParent();
-        while (!(parent instanceof FunctionDef))
-            parent = parent.getParent();
-
-        FunctionDef functionDef = (FunctionDef) parent;
-        if (functionDef.returnType != expr.getType())
-            throw new TypeMismatchException(expr.getPosition(), functionDef, expr.getType());
-    }*/
 
     private LogicExpr parseLogicExpr() throws ParseException {
         AndExpr andExpr = parseAndExpr();
@@ -408,10 +411,10 @@ class Parser {
             nextToken = lexer.peekToken();
         }
 
-        if (nextToken.getId() == TokenID.RoundBracketOpen)
-            return new BaseLogicExpr(nextToken.getPosition(), isNegation, parseBracketLogicExpr());
-        else
+        if (nextToken.getId() != TokenID.RoundBracketOpen && !isNegation)
             return new BaseLogicExpr(nextToken.getPosition(), isNegation, parseMathExpr());
+        else
+            return new BaseLogicExpr(nextToken.getPosition(), isNegation, parseBracketLogicExpr());
     }
 
     private LogicExpr parseBracketLogicExpr() throws ParseException {
@@ -498,8 +501,8 @@ class Parser {
         validateVariable(name);
         VariableCall variableCall = new VariableCall(name.getValue(), name.getPosition());
         if (lexer.peekToken().getId() == TokenID.SquareBracketOpen) {
-            variableCall.setColumn(parseMatrixDimension());
             variableCall.setRow(parseMatrixDimension());
+            variableCall.setColumn(parseMatrixDimension());
         }
         return variableCall;
     }

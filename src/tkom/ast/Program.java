@@ -1,6 +1,9 @@
 package tkom.ast;
 
+import tkom.Position;
 import tkom.ast.statement.InitStatement;
+import tkom.exception.ExecutionException.ExecutionException;
+import tkom.exception.ExecutionException.MissingMainException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -30,8 +33,38 @@ public class Program {
         initStatements.add(initStatement);
     }
 
-    public static void addGlobalVariable(Variable variable) {
-        globalVariables.put(variable.name, variable);
+    static void pushFunctionCall(FunctionDef functionDef) {
+        functionCallStack.push(functionDef);
+    }
+
+    public static FunctionDef popFunctionCall() {
+        return functionCallStack.pop();
+    }
+
+    public static void clear() {
+        initStatements = new LinkedList<>();
+        functionDefinitions = new LinkedList<>();
+        globalVariables = new HashMap<>();
+        functionCallStack = new Stack<>();
+    }
+
+    public static void pushStackLevel() {
+        functionCallStack.peek().pushStackLevel();
+    }
+
+    public static void popStackLevel() {
+        functionCallStack.peek().popStackLevel();
+    }
+
+    public static FunctionDef getLastFunctionCall() {
+        return functionCallStack.peek();
+    }
+
+    public static void addVariable(Variable variable) {
+        if (functionCallStack.empty())
+            globalVariables.put(variable.name, variable);
+        else
+            functionCallStack.peek().addVariable(variable);
     }
 
     public static Variable getVariable(String name) {
@@ -43,17 +76,19 @@ public class Program {
         return globalVariables.get(name);
     }
 
-    public static FunctionDef getFunctionDef(FunctionCall functionCall) {
+    public static FunctionDef getFunctionDef(FunctionCall functionCall, boolean checkTypes) {
         for (FunctionDef def : functionDefinitions) {
             if (!def.name.equals(functionCall.name) || def.getArguments().size() != functionCall.getParameters().size())
                 continue;
             boolean matched = true;
-//            for (int i = 0; i < def.getArguments().size(); i++) {
-//                if (def.getArguments().get(i).getType() != functionCall.getParameters().get(i).getType()) {
-//                    matched = false;
-//                    break;
-//                }
-//            }
+            if (checkTypes) {
+                for (int i = 0; i < def.getArguments().size(); i++) {
+                    if (def.getArguments().get(i).getKey() != functionCall.getParameters().get(i).getType()) {
+                        matched = false;
+                        break;
+                    }
+                }
+            }
             if (matched)
                 return def;
         }
@@ -65,7 +100,7 @@ public class Program {
             if (def.name.equals(functionDef.name) && def.getArguments().size() == functionDef.getArguments().size()) {
                 boolean matched = true;
                 for (int i = 0; i < def.getArguments().size(); i++) {
-                    if (def.getArguments().get(i).getType() != functionDef.getArguments().get(i).getType()) {
+                    if (def.getArguments().get(i).getKey() != functionDef.getArguments().get(i).getKey()) {
                         matched = false;
                         break;
                     }
@@ -74,5 +109,24 @@ public class Program {
                     return true;
             }
         return false;
+    }
+
+    private static FunctionDef getMainFunction() {
+        for (FunctionDef functionDef : functionDefinitions)
+            if (functionDef.name.equals("main") && functionDef.getArguments().isEmpty())
+                return functionDef;
+
+        return null;
+    }
+
+    public static void execute() throws ExecutionException {
+        for (InitStatement initStatement : initStatements)
+            initStatement.execute();
+
+        FunctionDef main = getMainFunction();
+        if (main == null)
+            throw new MissingMainException(new Position());
+
+        main.execute();
     }
 }

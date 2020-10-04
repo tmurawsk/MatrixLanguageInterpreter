@@ -2,6 +2,7 @@ package tkom.ast.statement;
 
 import tkom.Position;
 import tkom.ast.expression.MathExpr;
+import tkom.exception.ExecutionException.ExecutionException;
 
 import java.util.LinkedList;
 
@@ -22,8 +23,12 @@ public class PrintStatement extends Statement {
     }
 
     @Override
-    public void execute() {
-        //TODO
+    public void execute() throws ExecutionException {
+        StringBuilder sb = new StringBuilder();
+        for (Printable p : toPrint) {
+            sb.append(p.getString());
+        }
+        System.out.println(sb.toString());
     }
 
     private class Printable {
@@ -37,6 +42,13 @@ public class PrintStatement extends Statement {
 
         Printable(MathExpr mathExpr) {
             this.mathExpr = mathExpr;
+        }
+
+        public String getString() throws ExecutionException {
+            if (mathExpr != null)
+                return mathExpr.evaluate().getString();
+            else
+                return string;
         }
     }
 }

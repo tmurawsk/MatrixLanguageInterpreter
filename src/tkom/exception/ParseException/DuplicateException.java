@@ -1,7 +1,9 @@
-package tkom.exception;
+package tkom.exception.ParseException;
 
+import javafx.util.Pair;
 import tkom.Position;
 import tkom.Token;
+import tkom.TokenID;
 import tkom.ast.FunctionDef;
 import tkom.ast.Variable;
 
@@ -20,10 +22,10 @@ public class DuplicateException extends ParseException {
         this(position, "Function", functionDef.name + "(" + getArgumentTypesString(functionDef.getArguments()) + ")");
     }
 
-    private static String getArgumentTypesString(LinkedList<Variable> arguments) {
+    private static String getArgumentTypesString(LinkedList<Pair<TokenID, String>> arguments) {
         LinkedList<String> types = new LinkedList<>();
-        for (Variable v : arguments)
-            types.add(Token.getNameByToken(v.getType()));
+        for (Pair<TokenID, String> v : arguments)
+            types.add(Token.getNameByToken(v.getKey()));
         return String.join(", ", types);
     }
 }
